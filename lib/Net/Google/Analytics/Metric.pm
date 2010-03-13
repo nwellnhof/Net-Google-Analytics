@@ -5,10 +5,17 @@ use base qw(Class::Accessor);
 
 __PACKAGE__->mk_accessors(qw(name type value confidence_interval));
 
-sub new {
-    my $package = shift;
+sub _parse {
+    my ($package, $node) = @_;
 
-    return bless({}, $package);
+    my $self = {
+        name  => $node->getAttribute('name'),
+        type  => $node->getAttribute('type'),
+        value => $node->getAttribute('value'),
+        confidence_interval => $node->getAttribute('confidenceInterval'),
+    };
+
+    return bless($self, $package);
 }
 
 1;

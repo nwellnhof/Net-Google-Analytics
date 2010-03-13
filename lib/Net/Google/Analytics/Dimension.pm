@@ -5,10 +5,15 @@ use base qw(Class::Accessor);
 
 __PACKAGE__->mk_accessors(qw(name value));
 
-sub new {
-    my $package = shift;
+sub _parse {
+    my ($package, $node) = @_;
 
-    return bless({}, $package);
+    my $self = {
+        name  => $node->getAttribute('name'),
+        value => $node->getAttribute('value'),
+    };
+
+    return bless($self, $package);
 }
 
 1;

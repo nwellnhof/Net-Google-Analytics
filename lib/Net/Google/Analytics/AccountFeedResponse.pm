@@ -5,39 +5,12 @@ use base qw(Net::Google::Analytics::FeedResponse);
 
 use Net::Google::Analytics::AccountFeedEntry;
 
-my @property_map = (
-    account_id      => 'accountId',
-    account_name    => 'accountName',
-    profile_id      => 'profileId',
-    web_property_id => 'webPropertyId',
-    currency        => 'currency',
-    timezone        => 'timezone',
-);
-
 #__PACKAGE__->mk_accessors(qw());
 
 sub _parse_entry {
     my ($self, $entry_node) = @_;
 
-    my $xpc = $self->_xpc;
-
-    my $entry = Net::Google::Analytics::AccountFeedEntry->new();
-
-    for(my $i=0; $i<@property_map; $i+=2) {
-        my $from = $property_map[$i+1];
-        my $to   = $property_map[$i];
-
-        $entry->set(
-            $to,
-            $xpc->findvalue(
-                "dxp:property[\@name='ga:$from']/\@value",
-                $entry_node
-            )
-        );
-    }
-
-    $entry->table_id($entry_node->findvalue('dxp:tableId'));
-
+    my $entry = Net::Google::Analytics::AccountFeedEntry->_parse($entry_node);
     push(@{ $self->entries }, $entry);
 
     return $entry;

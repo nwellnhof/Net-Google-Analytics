@@ -1,17 +1,41 @@
 package Net::Google::Analytics::AccountFeedEntry;
 use strict;
 
-use base qw(Class::Accessor);
+use base qw(Class::Accessor Net::Google::Analytics::XML);
+
+my @property_map = (
+    account_id      => 'accountId',
+    account_name    => 'accountName',
+    profile_id      => 'profileId',
+    web_property_id => 'webPropertyId',
+    currency        => 'currency',
+    timezone        => 'timezone',
+);
 
 __PACKAGE__->mk_accessors(qw(
     account_id account_name profile_id web_property_id currency timezone
     table_id
 ));
 
-sub new {
-    my $package = shift;
+sub _parse {
+    my ($package, $node) = @_;
 
-    return bless({}, $package);
+    my $self = {};
+    my $xpc = $package->_xpc;
+
+    for(my $i=0; $i<@property_map; $i+=2) {
+        my $from = $property_map[$i+1];
+        my $to   = $property_map[$i];
+
+        $self->{$to} = $xpc->findvalue(
+            "dxp:property[\@name='ga:$from']/\@value",
+            $node
+        );
+    }
+
+    $self->{table_id} = $node->findvalue('dxp:tableId');
+
+    return bless($self, $package);
 }
 
 1;
