@@ -5,8 +5,6 @@ use base qw(Net::Google::Analytics::FeedResponse);
 
 use Net::Google::Analytics::AccountFeedEntry;
 
-#__PACKAGE__->mk_accessors(qw());
-
 sub _parse_entry {
     my ($self, $entry_node) = @_;
 
