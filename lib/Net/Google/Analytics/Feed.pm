@@ -3,9 +3,7 @@ use strict;
 
 use base qw(Class::Accessor Net::Google::Analytics::XML);
 
-use LWP::UserAgent;
 use URI;
-use XML::LibXML;
 
 __PACKAGE__->mk_accessors(qw(_analytics));
 
