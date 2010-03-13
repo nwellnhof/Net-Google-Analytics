@@ -11,22 +11,46 @@ sub new {
     my $package = shift;
 
     my $self = bless({}, $package);
-    $self->data_feed(Net::Google::Analytics::DataFeed->new());
+
+    my $data_feed = Net::Google::Analytics::DataFeed->new();
+    $data_feed->_analytics($self);
+    $self->data_feed($data_feed);
 
     return $self;
+}
+
+sub finish {
+    my $self = shift;
+
+    $self->data_feed(undef);
 }
 
 sub auth_params {
     my $self = shift;
 
-    my $auth_params = [ @_ ];
-    $self->data_feed->auth_params($auth_params);
+    my $auth_params = $self->{auth_params} || [];
+
+    if(@_) {
+        $self->{auth_params} = [ @_ ];
+    }
+
+    return @$auth_params;
 }
 
 sub user_agent {
-    my ($self, $ua) = @_;
+    my $self = $_[0];
 
-    $self->data_feed->user_agent($ua);
+    my $ua = $self->{user_agent};
+
+    if(@_ > 1) {
+        $self->{user_agent} = $_[1];
+    }
+    elsif(!defined($ua)) {
+        $ua = LWP::UserAgent->new();
+        $self->{user_agent} = $ua;
+    }
+
+    return $ua;
 }
 
 1;
@@ -35,9 +59,17 @@ __END__
 
 =head1 NAME
 
-Net::Google::Analytics - Simple interface to the Google Analytics API
+Net::Google::Analytics - Simple interface to the Google Analytics Data Export API
 
 =head1 DESCRIPTION
+
+This module provides a simple, straight-forward interface to the Google
+Analytics Data Export API, using L<LWP::UserAgent> and L<XML::LibXML> for
+the heavy lifting.
+
+See the
+L<developer guide|http://code.google.com/apis/analytics/docs/gdata/gdataDeveloperGuide.html>
+on code.google.com for the complete API documentation.
 
 =head1 SYNOPSIS
 
@@ -62,5 +94,46 @@ Net::Google::Analytics - Simple interface to the Google Analytics API
  print $entry->dimensions->[0]->value;
  print $entry->metrics->[0]->value;
 
+ $analytics->finish();
+
 =head1 CONSTRUCTOR
+
+=head2 new
+
+ my $analytics = Net::Google::Analytics->new();
+
+The constructor doesn't take any arguments.
+
+=head1 ACCESSORS
+
+=head2 data_feed
+
+The Analytics data feed, an object of type
+L<Net::Google::Analytics::DataFeed>.
+
+=head1 METHODS
+
+=head2 finish
+
+ $analytics->finish();
+
+Cleans up circular references between the $analytics object and the feeds.
+This should be called to make sure the object is destroyed after use.
+
+=head2 auth_params
+
+ $analytics->auth_params(@auth_params);
+
+Set the authentication parameters as key/value pairs. The values returned
+from L<Net::Google::AuthSub/auth_params> can be used directly.
+
+=head2 user_agent
+
+ $analytics->user_agent($ua);
+
+Sets the L<LWP::UserAgent> object to use for HTTP(S) requests. You only
+have to call this method if you want to provide your own user agent, e.g.
+to change the user agent HTTP header.
+
+=cut
 

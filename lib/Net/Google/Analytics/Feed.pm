@@ -1,40 +1,18 @@
 package Net::Google::Analytics::Feed;
 use strict;
 
-use base qw(Class::Accessor);
+use base qw(Class::Accessor Net::Google::Analytics::XML);
 
 use LWP::UserAgent;
 use URI;
 use XML::LibXML;
 
-our $parser = XML::LibXML->new();
-our $xpc = XML::LibXML::XPathContext->new();
-$xpc->registerNs(atom       => 'http://www.w3.org/2005/Atom');
-$xpc->registerNs(dxp        => 'http://schemas.google.com/analytics/2009');
-$xpc->registerNs(openSearch => 'http://a9.com/-/spec/opensearch/1.1/');
-
-__PACKAGE__->mk_accessors(qw(auth_params));
+__PACKAGE__->mk_accessors(qw(_analytics));
 
 sub new {
     my $package = shift;
 
     return bless({}, $package);
-}
-
-sub user_agent {
-    my $self = $_[0];
-
-    my $ua = $self->{user_agent};
-
-    if(@_ > 1) {
-        $self->{user_agent} = $_[1];
-    }
-    elsif(!defined($ua)) {
-        $ua = LWP::UserAgent->new();
-        $self->{user_agent} = $ua;
-    }
-
-    return $ua;
 }
 
 sub retrieve {
@@ -43,17 +21,20 @@ sub retrieve {
     my $res;
     my @entries;
     
-    my $uri = URI->new($self->base_url);
-    my $params = $request->params;
+    my $ua = $self->_analytics->user_agent;
+    my $xpc = $self->_xpc;
+
+    my $uri = URI->new($self->_base_url);
+    my $params = $request->_params;
     my @headers = (
         'GData-Version' => 2,
-        @{ $self->auth_params },
+        $self->_analytics->auth_params,
     );
 
     my $start_index = $request->start_index;
     $start_index = 1 if !defined($start_index);
     my $remaining_results = $request->max_results;
-    my $max_items_per_page = $self->max_items_per_page;
+    my $max_items_per_page = $self->_max_items_per_page;
 
     while(!defined($remaining_results) || $remaining_results > 0) {
         my $max_results =
@@ -68,24 +49,24 @@ sub retrieve {
         );
 
         print($uri->as_string, "\n");
-        my $page_res = $self->user_agent->get($uri->as_string, @headers);
+        my $page_res = $ua->get($uri->as_string, @headers);
 
         if(!$page_res->is_success) {
             my $status = $page_res->status_line;
             die("Analytics API request failed: $status\n");
         }
 
-        my $doc = $parser->parse_string($page_res->content);
+        my $doc = $self->_parser->parse_string($page_res->content);
         my $feed_node = $xpc->findnodes('/atom:feed', $doc)->get_node(1);
         my $entry_count = 0;
 
         if(!defined($res)) {
-            $res = $self->new_response();
-            $res->parse_feed($feed_node);
+            $res = $self->_new_response();
+            $res->_parse_feed($feed_node);
         }
 
         for my $entry_node ($xpc->findnodes('atom:entry', $feed_node)) {
-            $res->parse_entry($entry_node);
+            $res->_parse_entry($entry_node);
             ++$entry_count;
         }
 
@@ -99,4 +80,36 @@ sub retrieve {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Net::Google::Analytics::Feed - Google Analytics API feed
+
+=head1 DESCRIPTION
+
+This is a base class for the feeds of the Google Analytics Data Export API.
+
+See <http://code.google.com/apis/analytics/docs/gdata/gdataReference.html>.
+
+=head1 METHODS
+
+=head2 new_request
+
+ my $req = $feed->new_request();
+
+Creates and returns a new L<Net::Google::Analytics::FeedRequest> object
+for this feed.
+
+=head2 retrieve
+
+ my $res = $feed->retrieve($req);
+
+Retrieves data from the feed. $req is a
+L<Net::Google::Analytics::FeedRequest> object. You should use a request
+object returned from the L</new_request> method. This method returns a
+L<Net::Google::Analytics::FeedResponse> object.
+
+=cut
 

@@ -3,13 +3,9 @@ use strict;
 
 use base qw(Net::Google::Analytics::FeedResponse);
 
-use Net::Google::Analytics::Feed;
-
-my $xpc = $Net::Google::Analytics::Feed::xpc;
-
 #__PACKAGE__->mk_accessors(qw());
 
-sub parse_entry {
+sub _parse_entry {
     my ($self, $entry_node) = @_;
 
     my @dimensions = map {
@@ -17,7 +13,7 @@ sub parse_entry {
             name  => $_->getAttribute('name'),
             value => $_->getAttribute('value'),
         };
-    } $xpc->findnodes('dxp:dimension', $entry_node);
+    } $self->_xpc->findnodes('dxp:dimension', $entry_node);
 
     my @metrics = map {
         {
@@ -26,7 +22,7 @@ sub parse_entry {
             value => $_->getAttribute('value'),
             confidence_interval => $_->getAttribute('confidenceInterval'),
         };
-    } $xpc->findnodes('dxp:metric', $entry_node);
+    } $self->_xpc->findnodes('dxp:metric', $entry_node);
 
     my $entry = {
         dimensions => \@dimensions,
@@ -39,4 +35,24 @@ sub parse_entry {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Net::Google::Analytics::DataFeedResponse - Google Analytics API data feed
+response
+
+=head1 DESCRIPTION
+
+This package is a subclass of L<Net::Google::Analytics::FeedResponse> and
+implements parts of the data feed response of the Google Analytics Data
+Export API. The entries in the feed response are of type
+L<Net::Google::Analytics::DataFeedEntry>.
+
+See
+L<http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDataFeed.html#dataResponse>
+for a complete reference.
+
+=cut
 
