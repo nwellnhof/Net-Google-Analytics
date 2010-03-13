@@ -9,8 +9,9 @@ use XML::LibXML;
 
 our $parser = XML::LibXML->new();
 our $xpc = XML::LibXML::XPathContext->new();
-$xpc->registerNs(atom => 'http://www.w3.org/2005/Atom');
-$xpc->registerNs(dxp  => 'http://schemas.google.com/analytics/2009');
+$xpc->registerNs(atom       => 'http://www.w3.org/2005/Atom');
+$xpc->registerNs(dxp        => 'http://schemas.google.com/analytics/2009');
+$xpc->registerNs(openSearch => 'http://a9.com/-/spec/opensearch/1.1/');
 
 __PACKAGE__->mk_accessors(qw(auth_params));
 
@@ -44,7 +45,10 @@ sub retrieve {
     
     my $uri = URI->new($self->base_url);
     my $params = $request->params;
-    my $headers = $self->auth_params;
+    my @headers = (
+        'GData-Version' => 2,
+        @{ $self->auth_params },
+    );
 
     my $start_index = $request->start_index;
     $start_index = 1 if !defined($start_index);
@@ -60,10 +64,11 @@ sub retrieve {
             %$params,
             'start-index' => $start_index,
             'max-results' => $max_results,
+            'prettyprint' => 'true',
         );
 
         print($uri->as_string, "\n");
-        my $page_res = $self->user_agent->get($uri->as_string, @$headers);
+        my $page_res = $self->user_agent->get($uri->as_string, @headers);
 
         if(!$page_res->is_success) {
             my $status = $page_res->status_line;

@@ -18,7 +18,9 @@ sub new {
 sub parse_feed {
     my ($self, $feed_node) = @_;
 
-    $self->total_results($xpc->findvalue('atom:totalResults', $feed_node));
+    $self->total_results(
+        $xpc->findvalue('openSearch:totalResults', $feed_node)
+    );
 }
 
 1;
