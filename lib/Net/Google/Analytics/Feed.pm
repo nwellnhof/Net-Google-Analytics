@@ -90,6 +90,8 @@ Net::Google::Analytics::Feed - Google Analytics API feed
 =head1 DESCRIPTION
 
 This is a base class for the feeds of the Google Analytics Data Export API.
+Account feeds are implemented in L<Net::Google::Analytics::AccountFeed>.
+Data feeds are implemented in L<Net::Google::Analytics::DataFeed>.
 
 See <http://code.google.com/apis/analytics/docs/gdata/gdataReference.html>.
 

@@ -26,7 +26,7 @@ sub _params {
     for(my $i=0; $i<@param_map; $i+=2) {
         my $from = $param_map[$i];
         my $to   = $param_map[$i+1];
-        $params->{$to} = $self->{$from};
+        $params->{$to} = $self->get($from);
     }
 
     return $params;

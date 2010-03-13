@@ -30,10 +30,9 @@ Net::Google::Analytics::FeedResponse - Google Analytics API feed response
 =head1 DESCRIPTION
 
 This package is a base class for feed responses of the Google Analytics
-Data Export API.
-
-Currently, only responses for data feeds are implemented in
-L<Net::Google::Analytics::DataFeedResponse>.
+Data Export API. Account feed responses are implemented in
+L<Net::Google::Analytics::AccountFeedResponse>. Data feed responses are
+implemented in L<Net::Google::Analytics::DataFeedResponse>.
 
 =head1 ACCESSORS
 

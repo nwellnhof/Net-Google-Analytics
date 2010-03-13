@@ -3,14 +3,19 @@ use strict;
 
 use base qw(Class::Accessor);
 
+use Net::Google::Analytics::AccountFeed;
 use Net::Google::Analytics::DataFeed;
 
-__PACKAGE__->mk_accessors(qw(data_feed));
+__PACKAGE__->mk_accessors(qw(account_feed data_feed));
 
 sub new {
     my $package = shift;
 
     my $self = bless({}, $package);
+
+    my $account_feed = Net::Google::Analytics::AccountFeed->new();
+    $account_feed->_analytics($self);
+    $self->account_feed($account_feed);
 
     my $data_feed = Net::Google::Analytics::DataFeed->new();
     $data_feed->_analytics($self);
@@ -22,7 +27,8 @@ sub new {
 sub finish {
     my $self = shift;
 
-    $self->data_feed(undef);
+    $self->account_feed(undef);
+    $self->data_feed   (undef);
 }
 
 sub auth_params {
@@ -105,6 +111,11 @@ for the complete API documentation.
 The constructor doesn't take any arguments.
 
 =head1 ACCESSORS
+
+=head2 account_feed
+
+The Analytics account feed, an object of type
+L<Net::Google::Analytics::AccountFeed>.
 
 =head2 data_feed
 
