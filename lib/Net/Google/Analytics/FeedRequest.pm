@@ -12,7 +12,7 @@ sub new {
 }
 
 sub _params {
-    return {};
+    return ();
 }
 
 1;

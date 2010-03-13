@@ -25,7 +25,7 @@ sub retrieve {
     my $xpc = $self->_xpc;
 
     my $uri = URI->new($self->_base_url);
-    my $params = $request->_params;
+    my @params = $request->_params;
     my @headers = (
         'GData-Version' => 2,
         $self->_analytics->auth_params,
@@ -42,7 +42,7 @@ sub retrieve {
             $remaining_results < $max_items_per_page ?
                 $remaining_results : $max_items_per_page;
         $uri->query_form(
-            %$params,
+            @params,
             'start-index' => $start_index,
             'max-results' => $max_results,
             'prettyprint' => 'true',

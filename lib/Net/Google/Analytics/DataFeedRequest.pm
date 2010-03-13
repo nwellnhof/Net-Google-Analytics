@@ -21,15 +21,17 @@ __PACKAGE__->mk_accessors(qw(
 sub _params {
     my $self = shift;
 
-    my $params = $self->SUPER::_params();
+    my @params = $self->SUPER::_params();
     
     for(my $i=0; $i<@param_map; $i+=2) {
         my $from = $param_map[$i];
         my $to   = $param_map[$i+1];
-        $params->{$to} = $self->get($from);
+
+        my $value = $self->get($from);
+        push(@params, $to => $value) if defined($value);
     }
 
-    return $params;
+    return @params;
 }
 
 1;
