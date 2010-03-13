@@ -67,16 +67,16 @@ This module provides a simple, straight-forward interface to the Google
 Analytics Data Export API, using L<LWP::UserAgent> and L<XML::LibXML> for
 the heavy lifting.
 
-See the
-L<developer guide|http://code.google.com/apis/analytics/docs/gdata/gdataDeveloperGuide.html>
-on code.google.com for the complete API documentation.
+See
+L<http://code.google.com/apis/analytics/docs/gdata/gdataDeveloperGuide.html>
+for the complete API documentation.
 
 =head1 SYNOPSIS
 
  use Net::Google::Analytics;
  use Net::Google::AuthSub;
 
- my $auth = Net::Google::AuthSub->new();
+ my $auth = Net::Google::AuthSub->new(service => 'analytics');
  $auth->login($user, $pass);
 
  my $analytics = Net::Google::Analytics->new();
@@ -84,8 +84,8 @@ on code.google.com for the complete API documentation.
 
  my $data_feed = $analytics->data_feed;
  my $req = $data_feed->new_request();
- $req->dimensions('');
- $req->metrics('');
+ $req->dimensions('ga:...');
+ $req->metrics('ga:...');
  $req->start_date('YYYY-MM-DD');
  $req->end_date('YYYY-MM-DD');
  my $res = $data_feed->retrieve($req);
@@ -133,7 +133,7 @@ from L<Net::Google::AuthSub/auth_params> can be used directly.
 
 Sets the L<LWP::UserAgent> object to use for HTTP(S) requests. You only
 have to call this method if you want to provide your own user agent, e.g.
-to change the user agent HTTP header.
+to change the HTTP user agent header.
 
 =cut
 

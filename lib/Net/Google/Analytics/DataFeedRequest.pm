@@ -53,12 +53,19 @@ for a reference.
 =head1 ACCESSORS
 
 =head2 ids
+
 =head2 dimensions
+
 =head2 metrics
+
 =head2 sort
+
 =head2 filters
+
 =head2 segment
+
 =head2 start_date
+
 =head2 end_date
 
  $req->ids('ga:...');
