@@ -43,7 +43,7 @@ results in the response.
 
 =head2 entries
 
-An array ref of the entries in the feed response.
+An arrayref of the entries in the feed response.
 
 =cut
 

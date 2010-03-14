@@ -3,6 +3,7 @@ use strict;
 
 use base qw(Class::Accessor);
 
+use LWP::UserAgent;
 use Net::Google::Analytics::AccountFeed;
 use Net::Google::Analytics::DataFeed;
 
