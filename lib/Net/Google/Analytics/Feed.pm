@@ -7,12 +7,6 @@ use URI;
 
 __PACKAGE__->mk_accessors(qw(_analytics));
 
-sub new {
-    my $package = shift;
-
-    return bless({}, $package);
-}
-
 sub retrieve {
     my ($self, $request) = @_;
 

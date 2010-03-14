@@ -5,12 +5,6 @@ use base qw(Class::Accessor);
 
 __PACKAGE__->mk_accessors(qw(start_index max_results));
 
-sub new {
-    my $package = shift;
-
-    return bless({}, $package);
-}
-
 sub _params {
     return ();
 }
