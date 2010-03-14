@@ -105,5 +105,17 @@ L<Net::Google::Analytics::FeedRequest> object. You should use a request
 object returned from the L</new_request> method. This method returns a
 L<Net::Google::Analytics::FeedResponse> object.
 
+=head1 AUTHOR
+
+Nick Wellnhofer <wellnhofer@aevum.de>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) Nick Wellnhofer, 2010
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.8.0 or,
+at your option, any later version of Perl 5 you may have available.
+
 =cut
 
