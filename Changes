@@ -1,5 +1,10 @@
 Revision history for Perl module Net::Google::Analytics 
 
+0.10000
+        - Enhance API
+        - Add link to Github repository
+        - Smaller fixes
+
 0.09999_01
-        - Initial version
+        - Initial test version
 
