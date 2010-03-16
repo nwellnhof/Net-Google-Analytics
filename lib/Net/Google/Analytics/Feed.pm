@@ -34,7 +34,6 @@ sub _retrieve_xml {
     my ($self, $req, $start_index, $max_results) = @_;
 
     my $uri = $self->_uri($req, $start_index, $max_results);
-    print($uri->as_string, "\n");
     my $page_res = $self->_analytics->user_agent->get($uri->as_string,
         'GData-Version' => 2,
         $self->_analytics->auth_params,
