@@ -3,7 +3,9 @@ use strict;
 
 use base qw(Class::Accessor Net::Google::Analytics::XML);
 
-__PACKAGE__->mk_accessors(qw(total_results entries));
+__PACKAGE__->mk_accessors(qw(
+    total_results start_index items_per_page entries
+));
 
 sub new {
     my $package = shift;
@@ -41,9 +43,17 @@ implemented in L<Net::Google::Analytics::DataFeedResponse>.
 The total number of results for the query, regardless of the number of
 results in the response.
 
+=head2 start_index
+
+The 1-based start index of the entries.
+
+=head2 items_per_page
+
+The number of entries.
+
 =head2 entries
 
-An arrayref of the entries in the feed response.
+An arrayref of the entries.
 
 =head1 AUTHOR
 

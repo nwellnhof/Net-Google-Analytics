@@ -7,66 +7,115 @@ use URI;
 
 __PACKAGE__->mk_accessors(qw(_analytics));
 
-sub retrieve {
-    my ($self, $request) = @_;
-
-    my $res;
-    my @entries;
-    
-    my $ua = $self->_analytics->user_agent;
-    my $xpc = $self->_xpc;
+sub _uri {
+    my ($self, $req, $start_index, $max_results) = @_;
 
     my $uri = URI->new($self->_base_url);
-    my @params = $request->_params;
-    my @headers = (
+    my @params;
+    push(@params, 'start-index' => $start_index) if defined($start_index);
+    push(@params, 'max-results' => $max_results) if defined($max_results);
+
+    $uri->query_form(
+        $req->_params,
+        @params,
+        'prettyprint' => 'true',
+    );
+    
+    return $uri;
+}
+
+sub uri {
+    my ($self, $req);
+
+    return $self->_uri($req, $req->start_index, $req->max_results);
+}
+
+sub _retrieve_xml {
+    my ($self, $req, $start_index, $max_results) = @_;
+
+    my $uri = $self->_uri($req, $start_index, $max_results);
+    print($uri->as_string, "\n");
+    my $page_res = $self->_analytics->user_agent->get($uri->as_string,
         'GData-Version' => 2,
         $self->_analytics->auth_params,
     );
 
-    my $start_index = $request->start_index;
+    if(!$page_res->is_success) {
+        my $status = $page_res->status_line;
+        die("Analytics API request failed: $status\n");
+    }
+
+    return $page_res->content;
+}
+
+sub retrieve_xml {
+    my ($self, $req);
+
+    return $self->_retrieve_xml($req, $req->start_index, $req->max_results);
+}
+
+sub _retrieve {
+    my ($self, $req, $start_index, $max_results) = @_;
+
+    my $xml = $self->_retrieve_xml($req, $start_index, $max_results);
+
+    my $doc = $self->_parser->parse_string($xml);
+    my $xpc = $self->_xpc;
+    my $feed_node = $xpc->findnodes('/atom:feed', $doc)->get_node(1);
+
+    my $res = $self->_new_response();
+    $res->_parse_feed($feed_node);
+
+    for my $entry_node ($xpc->findnodes('atom:entry', $feed_node)) {
+        $res->_parse_entry($entry_node);
+    }
+
+    $start_index = $xpc->findvalue('openSearch:startIndex', $feed_node)
+        if !defined($start_index);
+    $res->start_index($start_index);
+    $res->items_per_page(scalar(@{ $res->entries }));
+
+    return $res;
+}
+
+sub retrieve {
+    my ($self, $req) = @_;
+
+    return $self->_retrieve($req, $req->start_index, $req->max_results);
+}
+
+sub retrieve_paged {
+    my ($self, $req) = @_;
+
+    my $start_index = $req->start_index;
     $start_index = 1 if !defined($start_index);
-    my $remaining_results = $request->max_results;
+    my $remaining_items = $req->max_results;
     my $max_items_per_page = $self->_max_items_per_page;
+    my $res;
 
-    while(!defined($remaining_results) || $remaining_results > 0) {
+    while(!defined($remaining_items) || $remaining_items > 0) {
         my $max_results =
-            defined($remaining_results) &&
-            $remaining_results < $max_items_per_page ?
-                $remaining_results : $max_items_per_page;
-        $uri->query_form(
-            @params,
-            'start-index' => $start_index,
-            'max-results' => $max_results,
-            'prettyprint' => 'true',
-        );
+            defined($remaining_items) &&
+            $remaining_items < $max_items_per_page ?
+                $remaining_items : $max_items_per_page;
 
-        print($uri->as_string, "\n");
-        my $page_res = $ua->get($uri->as_string, @headers);
-
-        if(!$page_res->is_success) {
-            my $status = $page_res->status_line;
-            die("Analytics API request failed: $status\n");
-        }
-
-        my $doc = $self->_parser->parse_string($page_res->content);
-        my $feed_node = $xpc->findnodes('/atom:feed', $doc)->get_node(1);
-        my $entry_count = 0;
+        my $page = $self->_retrieve($req, $start_index, $max_results);
 
         if(!defined($res)) {
-            $res = $self->_new_response();
-            $res->_parse_feed($feed_node);
+            $res = $page;
+        }
+        else {
+            push(@{ $res->entries }, @{ $page->entries });
         }
 
-        for my $entry_node ($xpc->findnodes('atom:entry', $feed_node)) {
-            $res->_parse_entry($entry_node);
-            ++$entry_count;
-        }
+        my $items_per_page = $page->items_per_page;
+        last if $items_per_page < $max_results;
 
-        last if $entry_count < $max_results;
-
-        $remaining_results -= $max_results if defined($remaining_results);
-        $start_index       += $max_results;
+        $remaining_items -= $items_per_page if defined($remaining_items);
+        $start_index     += $items_per_page;
     }
+
+    $res->items_per_page(scalar(@{ $res->entries }));
 
     return $res;
 }
@@ -96,6 +145,14 @@ See <http://code.google.com/apis/analytics/docs/gdata/gdataReference.html>.
 Creates and returns a new L<Net::Google::Analytics::FeedRequest> object
 for this feed.
 
+=head2 uri
+
+ my $uri = $feed->uri($req);
+
+Returns the URI of the feed. $req is a
+L<Net::Google::Analytics::FeedRequest> object. This method returns a L<URI>
+object.
+
 =head2 retrieve
 
  my $res = $feed->retrieve($req);
@@ -104,6 +161,20 @@ Retrieves data from the feed. $req is a
 L<Net::Google::Analytics::FeedRequest> object. You should use a request
 object returned from the L</new_request> method. This method returns a
 L<Net::Google::Analytics::FeedResponse> object.
+
+=head2 retrieve_xml
+
+ my $res = $feed->retrieve_xml($req);
+
+Retrieves the raw XML data as string from the feed. $req is a
+L<Net::Google::Analytics::FeedRequest> object.
+
+=head2 retrieve_paged
+
+ my $res = $feed->retrieve_paged($req);
+
+Works like C<retrieve> but works around the per-request entry limit. This
+method concatenates the results of multiple requests if necessary.
 
 =head1 AUTHOR
 

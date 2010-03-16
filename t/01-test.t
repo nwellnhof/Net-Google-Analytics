@@ -1,7 +1,7 @@
 #!perl -w
 use strict;
 
-use Test::More tests => 31;
+use Test::More tests => 35;
 
 our $expect_url;
 our $content;
@@ -49,7 +49,7 @@ ok($account_feed, 'account fede');
 
 $req = $account_feed->new_request();
 
-$expect_url = 'https://www.google.com/analytics/feeds/accounts/default?start-index=1&max-results=1000&prettyprint=true';
+$expect_url = 'https://www.google.com/analytics/feeds/accounts/default?prettyprint=true';
 $content = <<'EOF';
 <?xml version='1.0' encoding='UTF-8'?>
 <feed xmlns='http://www.w3.org/2005/Atom' xmlns:dxp='http://schemas.google.com/analytics/2009' xmlns:ga='http://schemas.google.com/ga/2009' xmlns:openSearch='http://a9.com/-/spec/opensearch/1.1/' xmlns:gd='http://schemas.google.com/g/2005' gd:etag='W/&quot;DUcCRX47eCp7I2A9WxNbFkk.&quot;' gd:kind='analytics#accounts'>
@@ -167,6 +167,9 @@ $res = $account_feed->retrieve($req);
 ok($res, 'retrieve account');
 
 is($res->total_results, 41, 'total_results');
+is($res->start_index, 1, 'start_index');
+is($res->items_per_page, 3, 'items_per_page');
+
 
 $entries = $res->entries;
 ok($entries, 'entries');
@@ -185,6 +188,7 @@ $req->ids('ga:1234567');
 $req->dimensions('ga:country');
 $req->metrics('ga:visits');
 $req->sort('-ga:visits');
+$req->start_index(1);
 $req->max_results(20);
 $req->start_date('2010-01-01');
 $req->end_date('2010-01-31');
@@ -275,6 +279,8 @@ $res = $data_feed->retrieve($req);
 ok($res, 'retrieve data');
 
 is($res->total_results, 6451, 'total_results');
+is($res->start_index, 1, 'start_index');
+is($res->items_per_page, 5, 'items_per_page');
 
 $entries = $res->entries;
 ok($entries, 'entries');
