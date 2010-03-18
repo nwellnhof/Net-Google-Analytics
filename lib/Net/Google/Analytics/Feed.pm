@@ -133,7 +133,7 @@ This is a base class for the feeds of the Google Analytics Data Export API.
 Account feeds are implemented in L<Net::Google::Analytics::AccountFeed>.
 Data feeds are implemented in L<Net::Google::Analytics::DataFeed>.
 
-See <http://code.google.com/apis/analytics/docs/gdata/gdataReference.html>.
+See L<http://code.google.com/apis/analytics/docs/gdata/gdataReference.html>.
 
 =head1 METHODS
 
