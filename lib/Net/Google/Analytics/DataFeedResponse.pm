@@ -40,12 +40,12 @@ sub project {
 
         my $proj_metrics = $proj_metrics{$key};
 
-        if(!$proj_metrics) {
+        if (!$proj_metrics) {
             $proj_metrics{$key} = $metrics;
         }
         else {
-            for(my $i=0; $i<@$metrics; ++$i) {
-                if($metrics->[$i]->type eq 'integer') {
+            for (my $i=0; $i<@$metrics; ++$i) {
+                if ($metrics->[$i]->type eq 'integer') {
                     $proj_metrics->[$i]->value(
                         $proj_metrics->[$i]->value + $metrics->[$i]->value
                     );
@@ -56,7 +56,7 @@ sub project {
 
     my @proj_entries;
 
-    while(my ($key, $metrics) = each(%proj_metrics)) {
+    while (my ($key, $metrics) = each(%proj_metrics)) {
         my $entry = Net::Google::Analytics::DataFeedEntry->new();
 
         my @dimensions = map {

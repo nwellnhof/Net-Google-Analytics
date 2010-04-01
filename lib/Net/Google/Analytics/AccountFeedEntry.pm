@@ -23,7 +23,7 @@ sub _parse {
     my $self = {};
     my $xpc = $package->_xpc;
 
-    for(my $i=0; $i<@property_map; $i+=2) {
+    for (my $i=0; $i<@property_map; $i+=2) {
         my $from = $property_map[$i+1];
         my $to   = $property_map[$i];
 
