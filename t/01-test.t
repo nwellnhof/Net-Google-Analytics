@@ -1,7 +1,7 @@
 #!perl -w
 use strict;
 
-use Test::More tests => 35;
+use Test::More tests => 33;
 
 our $expect_url;
 our $content;
@@ -299,8 +299,4 @@ ok($aggregates, 'aggregates');
 
 is($aggregates->[0]->name, 'ga:visits');
 is($aggregates->[1]->value, '101535');
-
-$analytics->finish();
-is($analytics->account_feed, undef, 'finish');
-is($analytics->data_feed, undef, 'finish');
 

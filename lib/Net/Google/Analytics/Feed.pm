@@ -3,9 +3,8 @@ use strict;
 
 use base qw(Class::Accessor Net::Google::Analytics::XML);
 
+use Scalar::Util;
 use URI;
-
-__PACKAGE__->mk_accessors(qw(_analytics));
 
 sub _uri {
     my ($self, $req, $start_index, $max_results) = @_;
@@ -24,6 +23,19 @@ sub _uri {
     return $uri;
 }
 
+sub _analytics {
+    my $self = $_[0];
+
+    my $analytics = $self->{_analytics};
+
+    if (@_ > 1) {
+        $self->{_analytics} = $_[1];
+        Scalar::Util::weaken($self->{_analytics});
+    }
+
+    return $analytics;
+}
+
 sub uri {
     my ($self, $req);
 
@@ -39,7 +51,7 @@ sub _retrieve_xml {
         $self->_analytics->auth_params,
     );
 
-    if(!$page_res->is_success) {
+    if (!$page_res->is_success) {
         my $status = $page_res->status_line;
         die("Analytics API request failed: $status\n");
     }
@@ -92,7 +104,7 @@ sub retrieve_paged {
     my $max_items_per_page = $self->_max_items_per_page;
     my $res;
 
-    while(!defined($remaining_items) || $remaining_items > 0) {
+    while (!defined($remaining_items) || $remaining_items > 0) {
         my $max_results =
             defined($remaining_items) &&
             $remaining_items < $max_items_per_page ?
@@ -100,7 +112,7 @@ sub retrieve_paged {
 
         my $page = $self->_retrieve($req, $start_index, $max_results);
 
-        if(!defined($res)) {
+        if (!defined($res)) {
             $res = $page;
         }
         else {

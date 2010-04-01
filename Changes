@@ -1,5 +1,8 @@
 Revision history for Perl module Net::Google::Analytics 
 
+0.10001
+        - Use weak ref instead of finish method
+
 0.10000
         - Enhance API
         - Add link to Github repository
