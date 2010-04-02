@@ -42,39 +42,50 @@ sub uri {
     return $self->_uri($req, $req->start_index, $req->max_results);
 }
 
-sub _retrieve_xml {
+sub _retrieve_http {
     my ($self, $req, $start_index, $max_results) = @_;
 
     my $uri = $self->_uri($req, $start_index, $max_results);
-    my $page_res = $self->_analytics->user_agent->get($uri->as_string,
+
+    return $self->_analytics->user_agent->get($uri->as_string,
         'GData-Version' => 2,
         $self->_analytics->auth_params,
     );
-
-    if (!$page_res->is_success) {
-        my $status = $page_res->status_line;
-        die("Analytics API request failed: $status\n");
-    }
-
-    return $page_res->content;
 }
 
 sub retrieve_xml {
     my ($self, $req);
 
-    return $self->_retrieve_xml($req, $req->start_index, $req->max_results);
+    my $http_res = $self->_retrieve_http(
+        $req, $req->start_index, $req->max_results
+    );
+
+    if (!$http_res->is_success) {
+        die('Analytics API request failed: ' . $http_res->status_line);
+    }
+
+    return $http_res->content;
 }
 
 sub _retrieve {
     my ($self, $req, $start_index, $max_results) = @_;
 
-    my $xml = $self->_retrieve_xml($req, $start_index, $max_results);
+    my $http_res = $self->_retrieve_http($req, $start_index, $max_results);
+    my $res = $self->_new_response();
 
-    my $doc = $self->_parser->parse_string($xml);
+    if (!$http_res->is_success) {
+        $res->code($http_res->code);
+        $res->message($http_res->message);
+
+        return $res;
+    }
+
+    $res->is_success(1);
+
+    my $doc = $self->_parser->parse_string($http_res->content);
     my $xpc = $self->_xpc;
     my $feed_node = $xpc->findnodes('/atom:feed', $doc)->get_node(1);
 
-    my $res = $self->_new_response();
     $res->_parse_feed($feed_node);
 
     for my $entry_node ($xpc->findnodes('atom:entry', $feed_node)) {

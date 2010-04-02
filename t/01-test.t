@@ -1,7 +1,7 @@
 #!perl -w
 use strict;
 
-use Test::More tests => 39;
+use Test::More tests => 41;
 
 our $expect_url;
 our $content;
@@ -165,6 +165,7 @@ EOF
 
 $res = $account_feed->retrieve($req);
 ok($res, 'retrieve account');
+ok($res->is_success, 'retrieve success');
 
 is($res->total_results, 41, 'total_results');
 is($res->start_index, 1, 'start_index');
@@ -277,6 +278,7 @@ EOF
 
 $res = $data_feed->retrieve($req);
 ok($res, 'retrieve data');
+ok($res->is_success, 'retrieve success');
 
 is($res->total_results, 6451, 'total_results');
 is($res->start_index, 1, 'start_index');
