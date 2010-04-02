@@ -31,6 +31,10 @@ sub _parse_entry {
 sub project {
     my ($self, $projection) = @_;
 
+    # Projected dimensions and the sum of their metrics are collected in
+    # hash %proj_metrics. The keys of the hash are the the projected
+    # dimension values joined with zero bytes.
+
     my %proj_metrics;
 
     for my $entry (@{ $self->entries }) {
@@ -45,14 +49,14 @@ sub project {
         }
         else {
             for (my $i=0; $i<@$metrics; ++$i) {
-                if ($metrics->[$i]->type eq 'integer') {
-                    $proj_metrics->[$i]->value(
-                        $proj_metrics->[$i]->value + $metrics->[$i]->value
-                    );
-                }
+                $proj_metrics->[$i]->value(
+                    $proj_metrics->[$i]->value + $metrics->[$i]->value
+                );
             }
         }
     }
+
+    # iterate over %proj_metrics and push new entries onto @proj_entries
 
     my @proj_entries;
 

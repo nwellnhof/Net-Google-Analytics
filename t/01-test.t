@@ -1,7 +1,7 @@
 #!perl -w
 use strict;
 
-use Test::More tests => 33;
+use Test::More tests => 39;
 
 our $expect_url;
 our $content;
@@ -299,4 +299,28 @@ ok($aggregates, 'aggregates');
 
 is($aggregates->[0]->name, 'ga:visits');
 is($aggregates->[1]->value, '101535');
+
+$res->project(sub {
+    my $dimensions = shift;
+
+    my $source = $dimensions->[0]->value;
+
+    return ($source =~ /\.co\.[a-z]+\z/i ? 'dot-co-domain' : 'other');
+});
+
+$entries = $res->entries;
+ok($entries, 'entries');
+
+is(@$entries, 2, 'count entries');
+
+for my $entry (@$entries) {
+    if ($entry->dimensions->[0]->value eq 'dot-co-domain') {
+        is($entry->metrics->[0]->value, 5_761);
+        is($entry->metrics->[1]->value, 3_975);
+    }
+    else {
+        is($entry->metrics->[0]->value, 101_818);
+        is($entry->metrics->[1]->value,  76_922);
+    }
+}
 
