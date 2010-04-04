@@ -1,6 +1,7 @@
 Revision history for Perl module Net::Google::Analytics 
 
 0.10002
+        - Backwards compatibility for XML::LibXML::XPathContext
         - Interactive authentication
         - Don't die in case of an HTTP error
         - Expose HTTP error via is_success, code, message
