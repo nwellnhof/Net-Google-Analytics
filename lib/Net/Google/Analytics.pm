@@ -7,7 +7,7 @@ use LWP::UserAgent;
 use Net::Google::Analytics::AccountFeed;
 use Net::Google::Analytics::DataFeed;
 
-__PACKAGE__->mk_accessors(qw(account_feed data_feed));
+__PACKAGE__->mk_accessors(qw(account_feed data_feed terminal));
 
 sub new {
     my $package = shift;
@@ -113,6 +113,26 @@ L<Net::Google::Analytics::AccountFeed>.
 
 The Analytics data feed, an object of type
 L<Net::Google::Analytics::DataFeed>.
+
+=head2 terminal
+
+Object that implements the following callback methods for interactive
+authentication:
+
+=head3 $terminal->auth_params
+
+ my @auth_params = $terminal->auth_params();
+
+This method is called before a feed request and the result is stored in
+auth_params if auth_params has not been sent. It may return cached auth
+params.
+
+=head3 $terminal->new_auth_params
+
+ my @auth_params = $terminal->new_auth_params($service, error => $error);
+
+This method is called if a HTTP request for a feed returns a 401 status
+code. Then auth_params is reset and the HTTP request is retried.
 
 =head1 METHODS
 

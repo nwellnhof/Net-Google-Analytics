@@ -46,11 +46,34 @@ sub _retrieve_http {
     my ($self, $req, $start_index, $max_results) = @_;
 
     my $uri = $self->_uri($req, $start_index, $max_results);
+    my $analytics = $self->_analytics;
+    my @auth_params = $analytics->auth_params;
+    my $terminal = $analytics->terminal;
 
-    return $self->_analytics->user_agent->get($uri->as_string,
-        'GData-Version' => 2,
-        $self->_analytics->auth_params,
-    );
+    if (!@auth_params && $terminal) {
+        @auth_params = $terminal->auth_params('analytics');
+        $analytics->auth_params(@auth_params);
+    }
+
+    my $http_res;
+
+    while (1) {
+        $http_res = $analytics->user_agent->get($uri->as_string,
+            'GData-Version' => 2,
+            @auth_params,
+        );
+        last if
+            $http_res->is_success ||
+            $http_res->code ne '401' ||
+            !$terminal;
+
+        @auth_params = $terminal->new_auth_params('analytics',
+            error => $http_res->message,
+        );
+        $analytics->auth_params(@auth_params);
+    }
+
+    return $http_res;
 }
 
 sub retrieve_xml {

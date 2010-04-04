@@ -1,6 +1,7 @@
 Revision history for Perl module Net::Google::Analytics 
 
 0.10002
+        - Interactive authentication
         - Don't die in case of an HTTP error
         - Expose HTTP error via is_success, code, message
         - Add tests and comments for project method
