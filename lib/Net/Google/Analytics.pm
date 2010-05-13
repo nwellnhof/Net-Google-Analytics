@@ -84,8 +84,9 @@ for the complete API documentation.
 
  my $data_feed = $analytics->data_feed;
  my $req = $data_feed->new_request();
- $req->dimensions('ga:...');
- $req->metrics('ga:...');
+ $req->ids('ga:1234567'); # your Analytics profile ID
+ $req->dimensions('ga:country');
+ $req->metrics('ga:visits');
  $req->start_date('YYYY-MM-DD');
  $req->end_date('YYYY-MM-DD');
  my $res = $data_feed->retrieve($req);
