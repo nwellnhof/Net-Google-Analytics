@@ -1,5 +1,10 @@
 Revision history for Perl module Net::Google::Analytics 
 
+0.11000
+        - Check required data feed parameters
+        - Documentation fixes
+        - Fix ->uri and ->retrieve_xml
+
 0.10002
         - Backwards compatibility for XML::LibXML::XPathContext
         - Interactive authentication
