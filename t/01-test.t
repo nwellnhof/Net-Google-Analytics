@@ -45,7 +45,7 @@ $analytics->auth_params('Auth-Test' => 'auth_value 123');
 my ($req, $res, $entries);
 
 my $account_feed = $analytics->account_feed;
-ok($account_feed, 'account fede');
+ok($account_feed, 'account feed');
 
 $req = $account_feed->new_request();
 
