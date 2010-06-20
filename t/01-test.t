@@ -1,7 +1,7 @@
 #!perl -w
 use strict;
 
-use Test::More tests => 41;
+use Test::More tests => 42;
 
 our $expect_url;
 our $content;
@@ -180,6 +180,7 @@ is(@$entries, 3, 'count entries');
 is($entries->[0]->account_id, '30481');
 is($entries->[1]->profile_id, '11380020');
 is($entries->[2]->table_id, 'ga:11380025');
+is($entries->[0]->title, 'www.googlestore.com');
 
 my $data_feed = $analytics->data_feed;
 ok($data_feed, 'data_feed');

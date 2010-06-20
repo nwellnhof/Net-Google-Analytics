@@ -14,7 +14,7 @@ my @property_map = (
 
 __PACKAGE__->mk_accessors(qw(
     account_id account_name profile_id web_property_id currency timezone
-    table_id
+    table_id title
 ));
 
 sub _parse {
@@ -33,7 +33,8 @@ sub _parse {
         );
     }
 
-    $self->{table_id} = $node->findvalue('dxp:tableId');
+    $self->{table_id} = $xpc->findvalue('dxp:tableId', $node);
+    $self->{title}    = $xpc->findvalue('atom:title',  $node);
 
     return bless($self, $package);
 }
@@ -67,6 +68,8 @@ Export API.
 =head2 timezone
 
 =head2 table_id
+
+=head2 title
 
 =head1 AUTHOR
 

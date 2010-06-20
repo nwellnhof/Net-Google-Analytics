@@ -1,5 +1,9 @@
 Revision history for Perl module Net::Google::Analytics 
 
+0.11001
+        - Add accessor for title of account feed entries
+          (Thanks to Andy McFarland for the patch)
+
 0.11000
         - Check required data feed parameters
         - Documentation fixes
