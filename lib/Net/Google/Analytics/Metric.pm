@@ -1,6 +1,8 @@
 package Net::Google::Analytics::Metric;
 use strict;
 
+# ABSTRACT: Google Analytics API metric
+
 use base qw(Class::Accessor);
 
 __PACKAGE__->mk_accessors(qw(name type value confidence_interval));
@@ -22,10 +24,6 @@ sub _parse {
 
 __END__
 
-=head1 NAME
-
-Net::Google::Analytics::Metric - Google Analytics API metric
-
 =head1 DESCRIPTION
 
 This package implements metric data of the Google Analytics Data Export
@@ -35,7 +33,7 @@ See
 L<http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDimensionsMetrics.html#metrics>
 for a reference.
 
-=head1 ACCESSORS
+=head1 ATTRIBUTES
 
 =head2 name
 
@@ -52,18 +50,6 @@ The value of the metric.
 =head2 confidence_interval
 
 The confidence interval of the metric's value.
-
-=head1 AUTHOR
-
-Nick Wellnhofer <wellnhofer@aevum.de>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright (C) Nick Wellnhofer, 2010
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.0 or,
-at your option, any later version of Perl 5 you may have available.
 
 =cut
 

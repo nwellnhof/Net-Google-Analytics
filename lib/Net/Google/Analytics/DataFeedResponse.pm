@@ -1,6 +1,8 @@
 package Net::Google::Analytics::DataFeedResponse;
 use strict;
 
+# ABSTRACT: Google Analytics API data feed response
+
 use base qw(Net::Google::Analytics::FeedResponse);
 
 use Net::Google::Analytics::DataFeedEntry;
@@ -83,11 +85,6 @@ sub project {
 
 __END__
 
-=head1 NAME
-
-Net::Google::Analytics::DataFeedResponse - Google Analytics API data feed
-response
-
 =head1 DESCRIPTION
 
 This package is a subclass of L<Net::Google::Analytics::FeedResponse> and
@@ -99,7 +96,7 @@ See
 L<http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDataFeed.html#dataResponse>
 for a complete reference.
 
-=head1 ACCESSORS
+=head1 ATTRIBUTES
 
 =head2 aggregates
 
@@ -135,18 +132,6 @@ categories.
 
      return ('other');
  });
-
-=head1 AUTHOR
-
-Nick Wellnhofer <wellnhofer@aevum.de>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright (C) Nick Wellnhofer, 2010
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.0 or,
-at your option, any later version of Perl 5 you may have available.
 
 =cut
 

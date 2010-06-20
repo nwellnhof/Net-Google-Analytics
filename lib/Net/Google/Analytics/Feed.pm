@@ -1,6 +1,8 @@
 package Net::Google::Analytics::Feed;
 use strict;
 
+# ABSTRACT: Google Analytics API feed
+
 use base qw(Class::Accessor Net::Google::Analytics::XML);
 
 use Scalar::Util;
@@ -169,10 +171,6 @@ sub retrieve_paged {
 
 __END__
 
-=head1 NAME
-
-Net::Google::Analytics::Feed - Google Analytics API feed
-
 =head1 DESCRIPTION
 
 This is a base class for the feeds of the Google Analytics Data Export API.
@@ -220,18 +218,6 @@ L<Net::Google::Analytics::FeedRequest> object.
 
 Works like C<retrieve> but works around the per-request entry limit. This
 method concatenates the results of multiple requests if necessary.
-
-=head1 AUTHOR
-
-Nick Wellnhofer <wellnhofer@aevum.de>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright (C) Nick Wellnhofer, 2010
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.0 or,
-at your option, any later version of Perl 5 you may have available.
 
 =cut
 

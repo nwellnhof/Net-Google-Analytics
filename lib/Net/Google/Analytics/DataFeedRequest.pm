@@ -1,6 +1,8 @@
 package Net::Google::Analytics::DataFeedRequest;
 use strict;
 
+# ABSTRACT: Google Analytics API data feed request
+
 use base qw(Net::Google::Analytics::FeedRequest);
 
 my @param_map = (
@@ -44,11 +46,6 @@ sub _params {
 
 __END__
 
-=head1 NAME
-
-Net::Google::Analytics::DataFeedRequest - Google Analytics API data feed
-request
-
 =head1 DESCRIPTION
 
 This package is a subclass of L<Net::Google::Analytics::FeedRequest> and
@@ -58,7 +55,7 @@ See
 L<http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDataFeed.html#dataRequest>
 for a reference.
 
-=head1 ACCESSORS
+=head1 ATTRIBUTES
 
 =head2 ids
 
@@ -81,18 +78,6 @@ for a reference.
 
 See the API reference for a description of the request parameters. The
 provided parameter values must not be URL encoded.
-
-=head1 AUTHOR
-
-Nick Wellnhofer <wellnhofer@aevum.de>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright (C) Nick Wellnhofer, 2010
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.0 or,
-at your option, any later version of Perl 5 you may have available.
 
 =cut
 

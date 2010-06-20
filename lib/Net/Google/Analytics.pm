@@ -1,6 +1,8 @@
 package Net::Google::Analytics;
 use strict;
 
+# ABSTRACT: Simple interface to the Google Analytics Data Export API
+
 use base qw(Class::Accessor);
 
 use LWP::UserAgent;
@@ -57,10 +59,6 @@ sub user_agent {
 
 __END__
 
-=head1 NAME
-
-Net::Google::Analytics - Simple interface to the Google Analytics Data Export API
-
 =head1 DESCRIPTION
 
 This module provides a simple, straight-forward interface to the Google
@@ -103,7 +101,7 @@ for the complete API documentation.
 
 The constructor doesn't take any arguments.
 
-=head1 ACCESSORS
+=head1 ATTRIBUTES
 
 =head2 account_feed
 
@@ -151,18 +149,6 @@ from L<Net::Google::AuthSub/auth_params> can be used directly.
 Sets the L<LWP::UserAgent> object to use for HTTP(S) requests. You only
 have to call this method if you want to provide your own user agent, e.g.
 to change the HTTP user agent header.
-
-=head1 AUTHOR
-
-Nick Wellnhofer <wellnhofer@aevum.de>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright (C) Nick Wellnhofer, 2010
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.0 or,
-at your option, any later version of Perl 5 you may have available.
 
 =cut
 

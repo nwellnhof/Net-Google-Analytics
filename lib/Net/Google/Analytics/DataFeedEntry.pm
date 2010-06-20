@@ -1,6 +1,8 @@
 package Net::Google::Analytics::DataFeedEntry;
 use strict;
 
+# ABSTRACT: Google Analytics API data feed entry
+
 use base qw(Class::Accessor Net::Google::Analytics::XML);
 
 use Net::Google::Analytics::Dimension;
@@ -33,16 +35,12 @@ sub _parse {
 
 __END__
 
-=head1 NAME
-
-Net::Google::Analytics::DataFeedEntry - Google Analytics API data feed entry
-
 =head1 DESCRIPTION
 
 This package implements data feed entries of the Google Analytics Data Export
 API.
 
-=head1 ACCESSORS
+=head1 ATTRIBUTES
 
 =head2 dimensions
 
@@ -51,18 +49,6 @@ An arrayref of L<Net::Google::Analytics::Dimension> objects.
 =head2 metrics
 
 An arrayref of L<Net::Google::Analytics::Metric> objects.
-
-=head1 AUTHOR
-
-Nick Wellnhofer <wellnhofer@aevum.de>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright (C) Nick Wellnhofer, 2010
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.0 or,
-at your option, any later version of Perl 5 you may have available.
 
 =cut
 
