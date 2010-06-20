@@ -8,6 +8,19 @@ use base qw(Class::Accessor Net::Google::Analytics::XML);
 use Scalar::Util;
 use URI;
 
+sub _analytics {
+    my $self = $_[0];
+
+    my $analytics = $self->{_analytics};
+
+    if (@_ > 1) {
+        $self->{_analytics} = $_[1];
+        Scalar::Util::weaken($self->{_analytics});
+    }
+
+    return $analytics;
+}
+
 sub _uri {
     my ($self, $req, $start_index, $max_results) = @_;
 
@@ -23,19 +36,6 @@ sub _uri {
     );
     
     return $uri;
-}
-
-sub _analytics {
-    my $self = $_[0];
-
-    my $analytics = $self->{_analytics};
-
-    if (@_ > 1) {
-        $self->{_analytics} = $_[1];
-        Scalar::Util::weaken($self->{_analytics});
-    }
-
-    return $analytics;
 }
 
 sub uri {
