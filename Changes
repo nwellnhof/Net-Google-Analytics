@@ -1,5 +1,8 @@
 Revision history for Perl module Net::Google::Analytics 
 
+0.11002
+        - Add back package version
+
 0.11001
         - Dist::Zilla related changes
         - Add accessor for title of account feed entries
