@@ -1,5 +1,9 @@
 Revision history for Perl module Net::Google::Analytics 
 
+0.11003
+        - Don't require 'dimensions' parameter in data feed requests
+          (Thanks to Simon Cavalletto for the report)
+
 0.11002
         - Add back package version
 

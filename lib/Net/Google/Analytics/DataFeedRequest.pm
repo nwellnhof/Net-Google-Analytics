@@ -25,7 +25,7 @@ sub _params {
 
     my @params = $self->SUPER::_params();
 
-    for my $name qw(ids dimensions metrics start_date end_date) {
+    for my $name (qw(ids metrics start_date end_date)) {
         my $value = $self->get($name);
         die("parameter $name is empty")
             if !defined($value) || $value eq '';
