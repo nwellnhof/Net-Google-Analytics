@@ -104,6 +104,26 @@ for the complete API documentation.
             $metrics->[1]->value, " pageviews\n";
     }
 
+=head1 GETTING STARTED
+
+Net::Google::Analytics doesn't support authentication by itself. You simply
+pass it the HTTP headers needed for authorization using the L<auth_params>
+method. See the synopsis for how to quickly create authorization headers with
+L<Net::Google::AuthSub> using your username and password. But you can also
+authenticate with OAuth.
+
+You have to provide the profile ID of your Analytics profile with every data
+feed request. You can find this decimal number hidden in the "profile settings"
+dialog in Google Analytics. Note that this ID is different from your account or
+property ID of the form UA-nnnnnn-n. Prepend your profile ID with "ga:" and
+pass it to the "ids" method of the request object.
+
+The "ids", "metrics", "start_date", and "end_date" parameters are required for
+every data feed request.
+
+For the exact parameter syntax and a list of supported dimensions and metrics
+you should consult the Google API documentation.
+
 =head1 CONSTRUCTOR
 
 =head2 new
