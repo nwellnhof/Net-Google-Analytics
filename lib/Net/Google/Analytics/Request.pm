@@ -1,36 +1,47 @@
-package Net::Google::Analytics::DataFeedRequest;
+package Net::Google::Analytics::Request;
 use strict;
 
-# ABSTRACT: Google Analytics API data feed request
+# ABSTRACT: Google Analytics API request
 
-use base qw(Net::Google::Analytics::FeedRequest);
+use base qw(Class::Accessor);
 
 my @param_map = (
-    ids        => 'ids',
-    dimensions => 'dimensions',
-    metrics    => 'metrics',
-    sort       => 'sort',
-    filters    => 'filters',
-    segment    => 'segment',
-    start_date => 'start-date',
-    end_date   => 'end-date',
+    ids          => 'ids',
+    start_date   => 'start-date',
+    end_date     => 'end-date',
+    metrics      => 'metrics',
+    dimensions   => 'dimensions',
+    sort         => 'sort',
+    filters      => 'filters',
+    segment      => 'segment',
+    fields       => 'fields',
+    pretty_print => 'prettyPrint',
+    user_ip      => 'userIp',
+    quota_user   => 'quotaUser',
 );
 
 __PACKAGE__->mk_accessors(qw(
-    ids dimensions metrics sort filters segment start_date end_date
+    ids
+    start_date end_date
+    metrics dimensions
+    sort filters segment
+    start_index max_results
+    fields
+    pretty_print
+    user_ip quota_user
 ));
 
 sub _params {
     my $self = shift;
-
-    my @params = $self->SUPER::_params();
 
     for my $name (qw(ids metrics start_date end_date)) {
         my $value = $self->get($name);
         die("parameter $name is empty")
             if !defined($value) || $value eq '';
     }
-    
+
+    my @params;
+
     for (my $i=0; $i<@param_map; $i+=2) {
         my $from = $param_map[$i];
         my $to   = $param_map[$i+1];
@@ -56,6 +67,10 @@ L<http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDataFeed.html#d
 for a reference.
 
 =head1 ACCESSORS
+
+=head2 start_index
+
+=head2 max_results
 
 =head2 ids
 
