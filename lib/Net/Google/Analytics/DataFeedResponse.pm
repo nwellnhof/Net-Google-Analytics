@@ -96,7 +96,7 @@ See
 L<http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDataFeed.html#dataResponse>
 for a complete reference.
 
-=head1 ATTRIBUTES
+=head1 ACCESSORS
 
 =head2 aggregates
 

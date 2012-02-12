@@ -40,7 +40,7 @@ __END__
 This package implements data feed entries of the Google Analytics Data Export
 API.
 
-=head1 ATTRIBUTES
+=head1 ACCESSORS
 
 =head2 dimensions
 

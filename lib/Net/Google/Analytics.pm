@@ -71,27 +71,38 @@ for the complete API documentation.
 
 =head1 SYNOPSIS
 
- use Net::Google::Analytics;
- use Net::Google::AuthSub;
+    use Net::Google::Analytics;
+    use Net::Google::AuthSub;
 
- my $auth = Net::Google::AuthSub->new(service => 'analytics');
- $auth->login($user, $pass);
+    my $auth = Net::Google::AuthSub->new(service => 'analytics');
+    $auth->login($user, $pass);
 
- my $analytics = Net::Google::Analytics->new();
- $analytics->auth_params($auth->auth_params);
+    my $analytics = Net::Google::Analytics->new();
+    $analytics->auth_params($auth->auth_params);
 
- my $data_feed = $analytics->data_feed;
- my $req = $data_feed->new_request();
- $req->ids('ga:1234567'); # your Analytics profile ID
- $req->dimensions('ga:country');
- $req->metrics('ga:visits');
- $req->start_date('YYYY-MM-DD');
- $req->end_date('YYYY-MM-DD');
- my $res = $data_feed->retrieve($req);
+    my $data_feed = $analytics->data_feed;
+    my $req = $data_feed->new_request();
+    # Insert your numeric Analytics profile ID here. You can find it under
+    # profile settings. DO NOT use your account or property ID (UA-nnnnnn).
+    $req->ids('ga:1234567'); # your Analytics profile ID
+    $req->dimensions('ga:year,ga:month,ga:country');
+    $req->metrics('ga:visits,ga:pageviews');
+    $req->start_date('2011-01-01');
+    $req->end_date('2011-12-31');
 
- my $entry = $res->entries->[$i];
- print $entry->dimensions->[0]->value;
- print $entry->metrics->[0]->value;
+    my $res = $data_feed->retrieve($req);
+    die("GA error: " . $res->status_line) if !$res->is_success;
+
+    for my $entry (@{ $res->entries }) {
+        my $dimensions = $entry->dimensions;
+        my $metrics    = $entry->metrics;
+        print
+            "year ",    $dimensions->[0]->value, ", ",
+            "month ",   $dimensions->[1]->value, ", ",
+            "country ", $dimensions->[2]->value, ": ",
+            $metrics->[0]->value, " visits, ",
+            $metrics->[1]->value, " pageviews\n";
+    }
 
 =head1 CONSTRUCTOR
 
@@ -101,7 +112,7 @@ for the complete API documentation.
 
 The constructor doesn't take any arguments.
 
-=head1 ATTRIBUTES
+=head1 ACCESSORS
 
 =head2 account_feed
 

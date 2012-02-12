@@ -31,7 +31,7 @@ See
 L<http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDimensionsMetrics.html#dimensions>
 for a reference.
 
-=head1 ATTRIBUTES
+=head1 ACCESSORS
 
 =head2 name
 

@@ -21,7 +21,7 @@ This is a base class for feed requests of the Google Analytics Data Export
 API. Account feed requests are implemented in this class. Data feed requests
 are implemented in L<Net::Google::Analytics::DataFeedRequest>.
 
-=head1 ATTRIBUTES
+=head1 ACCESSORS
 
 =head2 start_index
 

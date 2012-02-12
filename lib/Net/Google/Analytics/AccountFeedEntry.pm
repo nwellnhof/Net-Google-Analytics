@@ -50,7 +50,7 @@ __END__
 This package implements account feed entries of the Google Analytics Data
 Export API.
 
-=head1 ATTRIBUTES
+=head1 ACCESSORS
 
 =head2 account_id
 

@@ -41,7 +41,7 @@ Data Export API. Account feed responses are implemented in
 L<Net::Google::Analytics::AccountFeedResponse>. Data feed responses are
 implemented in L<Net::Google::Analytics::DataFeedResponse>.
 
-=head1 ATTRIBUTES
+=head1 ACCESSORS
 
 =head2 is_success
 
