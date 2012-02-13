@@ -3,7 +3,20 @@ use strict;
 
 # ABSTRACT: Google Analytics API request
 
-use base qw(Class::Accessor);
+use Class::XSAccessor
+    accessors => [ qw(
+        ids
+        start_date end_date
+        metrics dimensions
+        sort
+        filters
+        segment
+        start_index max_results
+        fields
+        pretty_print
+        user_ip quota_user
+    ) ],
+    constructor => 'new';
 
 my @param_map = (
     ids          => 'ids',
@@ -20,22 +33,11 @@ my @param_map = (
     quota_user   => 'quotaUser',
 );
 
-__PACKAGE__->mk_accessors(qw(
-    ids
-    start_date end_date
-    metrics dimensions
-    sort filters segment
-    start_index max_results
-    fields
-    pretty_print
-    user_ip quota_user
-));
-
 sub _params {
     my $self = shift;
 
     for my $name (qw(ids metrics start_date end_date)) {
-        my $value = $self->get($name);
+        my $value = $self->{$name};
         die("parameter $name is empty")
             if !defined($value) || $value eq '';
     }
@@ -46,7 +48,7 @@ sub _params {
         my $from = $param_map[$i];
         my $to   = $param_map[$i+1];
 
-        my $value = $self->get($from);
+        my $value = $self->{$from};
         push(@params, $to => $value) if defined($value);
     }
 

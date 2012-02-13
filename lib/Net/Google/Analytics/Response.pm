@@ -3,19 +3,13 @@ use strict;
 
 # ABSTRACT: Google Analytics API response
 
-use base qw(Class::Accessor);
-
-__PACKAGE__->mk_accessors(qw(
-    is_success code message
-    total_results start_index items_per_page
-    column_headers rows totals
-));
-
-sub new {
-    my $package = shift;
-
-    return bless({}, $package);
-}
+use Class::XSAccessor
+    accessors => [ qw(
+        is_success code message
+        total_results start_index items_per_page
+        column_headers rows totals
+    ) ],
+    constructor => 'new';
 
 sub status_line {
     my $self = shift;

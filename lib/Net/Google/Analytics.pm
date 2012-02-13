@@ -3,17 +3,15 @@ use strict;
 
 # ABSTRACT: Simple interface to the Google Analytics Core Reporting API
 
-use base qw(Class::Accessor);
-
 use JSON;
 use LWP::UserAgent;
 use Net::Google::Analytics::Request;
 use Net::Google::Analytics::Response;
 use Net::Google::Analytics::Row;
-use Scalar::Util;
 use URI;
 
-__PACKAGE__->mk_accessors(qw(terminal));
+use Class::XSAccessor
+    accessors => [ 'terminal' ];
 
 sub new {
     my $package = shift;
