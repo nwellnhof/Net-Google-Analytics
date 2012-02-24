@@ -22,17 +22,22 @@ sub _parse_json {
 
     $self->items_per_page($json->{itemsPerPage});
     $self->total_results($json->{totalResults});
-    $self->_totals($json->{totalsForAllResults});
+
+    my $json_totals = $json->{totalsForAllResults};
+    my %totals;
+
+    while (my ($json_name, $total) = each(%$json_totals)) {
+        my $column_name = _parse_column_name($json_name);
+        $totals{$column_name} = $total;
+    }
+
+    $self->_totals(\%totals);
 
     my @column_headers;
 
     for my $column_header (@{ $json->{columnHeaders} }) {
-        die("invalid column name: $column_header->{name}")
-            unless $column_header->{name} =~ /^ga:(\w{1,64})\z/;
-        my $column_name = $1;
-
         push(@column_headers, {
-            name        => $column_name,
+            name        => _parse_column_name($column_header->{name}),
             column_type => $column_header->{columnType},
             data_type   => $column_header->{dataType},
         });
@@ -44,6 +49,18 @@ sub _parse_json {
 
     my @rows = map { $class->new($_) } @{ $json->{rows} };
     $self->rows(\@rows);
+}
+
+sub _parse_column_name {
+    my $name = shift;
+
+    my ($res) = $name =~ /^ga:(\w{1,64})\z/
+        or die("invalid column name: $name");
+
+    # convert camel case
+    $res =~ s/[A-Z]/'_' . lc($&)/ge;
+
+    return $res;
 }
 
 sub metrics {
@@ -61,7 +78,7 @@ sub dimensions {
 sub totals {
     my ($self, $metric) = @_;
 
-    return $self->_totals->{"ga:$metric"};
+    return $self->_totals->{$metric};
 }
 
 sub _columns {
@@ -176,11 +193,13 @@ An arrayref of result rows.
 
 =head2 dimensions
 
-An array of all dimension names (without 'ga:')
+An array of all dimension names without the 'ga:' prefix and converted to
+lower case with underscores.
 
 =head2 metrics
 
-An array of all metric names (without 'ga:')
+An array of all metric names without the 'ga:' prefix and converted to
+lower case with underscores.
 
 =head1 METHODS
 
@@ -188,7 +207,8 @@ An array of all metric names (without 'ga:')
 
     my $total = $res->totals($metric);
 
-Returns the total of all results for $metric.
+Returns the total of all results for a metric. $metric is a metric name
+without the 'ga:' prefix and converted to lower case with underscores.
 
 =head2 project
 

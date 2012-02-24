@@ -1,7 +1,7 @@
 #!perl -w
 use strict;
 
-use Test::More tests => 30;
+use Test::More tests => 31;
 
 our $expect_url;
 our $content;
@@ -57,7 +57,7 @@ $expect_url = 'https://www.googleapis.com/analytics/v3/data/ga?ids=ga%3A1234567&
 $content = <<'EOF';
 {
  "kind": "analytics#gaData",
- "id": "https://www.googleapis.com/analytics/v3/data/ga?ids=ga:1234567&dimensions=ga:medium,ga:source&metrics=ga:bounces,ga:visits&sort=-ga:visits&filters=ga:medium%3D%3Dreferral&start-date=2008-10-01&end-date=2008-10-31&start-index=1&max-results=5",
+ "id": "https://www.googleapis.com/analytics/v3/data/ga?ids=ga:1234567&dimensions=ga:medium,ga:source&metrics=ga:bounces,ga:newVisits&sort=-ga:newVisits&filters=ga:medium%3D%3Dreferral&start-date=2008-10-01&end-date=2008-10-31&start-index=1&max-results=5",
  "query": {
   "start-date": "2008-10-01",
   "end-date": "2008-10-31",
@@ -65,10 +65,10 @@ $content = <<'EOF';
   "dimensions": "ga:medium,ga:source",
   "metrics": [
    "ga:bounces",
-   "ga:visits"
+   "ga:newVisits"
   ],
   "sort": [
-   "-ga:visits"
+   "-ga:newVisits"
   ],
   "filters": "ga:medium==referral",
   "start-index": 1,
@@ -76,8 +76,8 @@ $content = <<'EOF';
  },
  "itemsPerPage": 5,
  "totalResults": 6451,
- "selfLink": "https://www.googleapis.com/analytics/v3/data/ga?ids=ga:1234567&dimensions=ga:medium,ga:source&metrics=ga:bounces,ga:visits&sort=-ga:visits&filters=ga:medium%3D%3Dreferral&start-date=2008-10-01&end-date=2008-10-31&start-index=1&max-results=5",
- "nextLink": "https://www.googleapis.com/analytics/v3/data/ga?ids=ga:1234567&dimensions=ga:medium,ga:source&metrics=ga:bounces,ga:visits&sort=-ga:visits&filters=ga:medium%3D%3Dreferral&start-date=2008-10-01&end-date=2008-10-31&start-index=6&max-results=5",
+ "selfLink": "https://www.googleapis.com/analytics/v3/data/ga?ids=ga:1234567&dimensions=ga:medium,ga:source&metrics=ga:bounces,ga:newVisits&sort=-ga:newVisits&filters=ga:medium%3D%3Dreferral&start-date=2008-10-01&end-date=2008-10-31&start-index=1&max-results=5",
+ "nextLink": "https://www.googleapis.com/analytics/v3/data/ga?ids=ga:1234567&dimensions=ga:medium,ga:source&metrics=ga:bounces,ga:newVisits&sort=-ga:newVisits&filters=ga:medium%3D%3Dreferral&start-date=2008-10-01&end-date=2008-10-31&start-index=6&max-results=5",
  "profileInfo": {
   "profileId": "1234567",
   "accountId": "7654321",
@@ -104,14 +104,14 @@ $content = <<'EOF';
    "dataType": "INTEGER"
   },
   {
-   "name": "ga:visits",
+   "name": "ga:newVisits",
    "columnType": "METRIC",
    "dataType": "INTEGER"
   }
  ],
  "totalsForAllResults": {
   "ga:bounces": "101535",
-  "ga:visits": "136540"
+  "ga:newVisits": "136540"
  },
  "rows": [
   [
@@ -163,7 +163,7 @@ is($column_headers->[2]->{column_type}, 'METRIC');
 is($column_headers->[3]->{data_type}, 'INTEGER');
 
 my @metrics = $res->metrics;
-is_deeply(\@metrics, [ qw(bounces visits) ]);
+is_deeply(\@metrics, [ qw(bounces new_visits) ]);
 
 my @dimensions = $res->dimensions;
 is_deeply(\@dimensions, [ qw(medium source) ]);
@@ -175,11 +175,12 @@ is(@$rows, 5, 'count rows');
 
 is($rows->[0]->get_medium, 'referral');
 is($rows->[1]->get_source, 'google.com');
-is($rows->[2]->get_visits, '4012');
+is($rows->[2]->get_new_visits, '4012');
 is($rows->[4]->get_bounces, '1891');
-is($rows->[3]->get('visits'), '2968');
+is($rows->[3]->get('new_visits'), '2968');
 
 is($res->totals('bounces'), '101535');
+is($res->totals('new_visits'), '136540');
 
 $res->project([ 'domain_style' ], sub {
     my $row = shift;
@@ -196,11 +197,11 @@ is(@$rows, 2, 'count rows');
 
 for my $row (@$rows) {
     if ($row->get_domain_style eq 'dot-co-domain') {
-        is($row->get_visits, 5_761);
+        is($row->get_new_visits, 5_761);
         is($row->get_bounces, 3_975);
     }
     else {
-        is($row->get_visits, 101_818);
+        is($row->get_new_visits, 101_818);
         is($row->get_bounces,  76_922);
     }
 }
