@@ -1,7 +1,7 @@
 #!perl -w
 use strict;
 
-use Test::More tests => 26;
+use Test::More tests => 28;
 
 our $expect_url;
 our $content;
@@ -167,8 +167,10 @@ ok($rows, 'rows');
 
 is(@$rows, 5, 'count rows');
 
-is($rows->[1]->source, 'google.com');
-is($rows->[4]->bounces, '1891');
+is($rows->[0]->ga_medium, 'referral');
+is($rows->[1]->ga_source, 'google.com');
+is($rows->[2]->ga_visits, '4012');
+is($rows->[4]->ga_bounces, '1891');
 
 my $totals = $res->totals;
 ok($totals, 'totals');
@@ -194,12 +196,12 @@ SKIP: {
 
     for my $row (@$rows) {
         if ($row->dimensions->[0]->value eq 'dot-co-domain') {
-            is($row->visits, 5_761);
-            is($row->bounces, 3_975);
+            is($row->ga_visits, 5_761);
+            is($row->ga_bounces, 3_975);
         }
         else {
-            is($row->visits, 101_818);
-            is($row->bounces,  76_922);
+            is($row->ga_visits, 101_818);
+            is($row->ga_bounces,  76_922);
         }
     }
 };

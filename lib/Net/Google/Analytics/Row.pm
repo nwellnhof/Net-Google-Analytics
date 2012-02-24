@@ -34,7 +34,7 @@ sub gen_class {
     # Create accessors
     my %getters;
     for (my $i = 0; $i < @_; ++$i) {
-        my $column_name = $_[$i];
+        my $column_name = 'ga_' . $_[$i];
         $getters{$column_name} = $i;
     }
     $class->_create_accessors(getters => \%getters);
