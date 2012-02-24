@@ -30,8 +30,6 @@ sub _parse_json {
         die("invalid column name: $column_header->{name}")
             unless $column_header->{name} =~ /^ga:(\w{1,64})\z/;
         my $column_name = $1;
-        die("invalid column name: $column_header->{name}")
-            if $column_name =~ /^_/ || $column_name eq 'new';
         push(@columns_names, $column_name);
 
         push(@column_headers, {

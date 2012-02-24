@@ -90,10 +90,7 @@ sub _retrieve_http {
     my $http_res;
 
     while (1) {
-        $http_res = $self->user_agent->get($uri->as_string,
-            'GData-Version' => 2,
-            @auth_params,
-        );
+        $http_res = $self->user_agent->get($uri->as_string, @auth_params);
         last if
             $http_res->is_success ||
             $http_res->code ne '401' ||
