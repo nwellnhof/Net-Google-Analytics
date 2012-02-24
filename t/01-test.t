@@ -1,7 +1,7 @@
 #!perl -w
 use strict;
 
-use Test::More tests => 29;
+use Test::More tests => 31;
 
 our $expect_url;
 our $content;
@@ -161,6 +161,12 @@ ok($column_headers, 'column headers');
 is($column_headers->[0]->{name}, 'medium');
 is($column_headers->[2]->{column_type}, 'METRIC');
 is($column_headers->[3]->{data_type}, 'INTEGER');
+
+my @metrics = $res->metrics;
+is_deeply(\@metrics, [ qw(bounces visits) ]);
+
+my @dimensions = $res->dimensions;
+is_deeply(\@dimensions, [ qw(medium source) ]);
 
 $rows = $res->rows;
 ok($rows, 'rows');

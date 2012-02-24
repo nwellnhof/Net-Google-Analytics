@@ -46,6 +46,33 @@ sub _parse_json {
     $self->rows(\@rows);
 }
 
+sub metrics {
+    my $self = shift;
+
+    return $self->_columns('METRIC');
+}
+
+sub dimensions {
+    my $self = shift;
+
+    return $self->_columns('DIMENSION');
+}
+
+sub _columns {
+    my ($self, $type) = @_;
+
+    my $column_headers = $self->column_headers;
+    my @results;
+
+    for my $column_header (@$column_headers) {
+        if ($column_header->{column_type} eq $type) {
+            push(@results, $column_header->{name});
+        }
+    }
+
+    return @results;
+}
+
 sub project {
     my ($self, $proj_dim_names, $projection) = @_;
 
