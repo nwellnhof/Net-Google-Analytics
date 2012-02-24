@@ -1,7 +1,7 @@
 #!perl -w
 use strict;
 
-use Test::More tests => 28;
+use Test::More tests => 29;
 
 our $expect_url;
 our $content;
@@ -171,6 +171,7 @@ is($rows->[0]->ga_medium, 'referral');
 is($rows->[1]->ga_source, 'google.com');
 is($rows->[2]->ga_visits, '4012');
 is($rows->[4]->ga_bounces, '1891');
+is($rows->[3]->get('visits'), '2968');
 
 my $totals = $res->totals;
 ok($totals, 'totals');
@@ -178,31 +179,27 @@ ok($totals, 'totals');
 #is($totals->[0]->name, 'ga:visits');
 is($totals->{'ga:bounces'}, '101535');
 
-SKIP: {
-    skip('project not yet implemented', 6);
+$res->project([ 'domain_style' ], sub {
+    my $row = shift;
 
-    $res->project(sub {
-        my $dimensions = shift;
+    return $row->ga_source =~ /\.co\.[a-z]+\z/i ?
+        'dot-co-domain' :
+        'other';
+});
 
-        my $source = $dimensions->[0]->value;
+$rows = $res->rows;
+ok($rows, 'rows');
 
-        return ($source =~ /\.co\.[a-z]+\z/i ? 'dot-co-domain' : 'other');
-    });
+is(@$rows, 2, 'count rows');
 
-    $rows = $res->rows;
-    ok($rows, 'rows');
-
-    is(@$rows, 2, 'count rows');
-
-    for my $row (@$rows) {
-        if ($row->dimensions->[0]->value eq 'dot-co-domain') {
-            is($row->ga_visits, 5_761);
-            is($row->ga_bounces, 3_975);
-        }
-        else {
-            is($row->ga_visits, 101_818);
-            is($row->ga_bounces,  76_922);
-        }
+for my $row (@$rows) {
+    if ($row->ga_domain_style eq 'dot-co-domain') {
+        is($row->ga_visits, 5_761);
+        is($row->ga_bounces, 3_975);
     }
-};
+    else {
+        is($row->ga_visits, 101_818);
+        is($row->ga_bounces,  76_922);
+    }
+}
 

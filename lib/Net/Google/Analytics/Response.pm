@@ -24,13 +24,12 @@ sub _parse_json {
     $self->total_results($json->{totalResults});
     $self->totals($json->{totalsForAllResults});
 
-    my (@column_headers, @columns_names);
+    my @column_headers;
 
     for my $column_header (@{ $json->{columnHeaders} }) {
         die("invalid column name: $column_header->{name}")
             unless $column_header->{name} =~ /^ga:(\w{1,64})\z/;
         my $column_name = $1;
-        push(@columns_names, $column_name);
 
         push(@column_headers, {
             name        => $column_name,
@@ -41,16 +40,16 @@ sub _parse_json {
 
     $self->column_headers(\@column_headers);
 
-    my $class = Net::Google::Analytics::Row->gen_class(@columns_names);
+    my $class = Net::Google::Analytics::Row->gen_class(\@column_headers);
 
     my @rows = map { $class->new($_) } @{ $json->{rows} };
     $self->rows(\@rows);
 }
 
 sub project {
-    my ($self, $projection, $proj_dim_names) = @_;
+    my ($self, $proj_dim_names, $projection) = @_;
 
-    my (@metric_indices, @column_names);
+    my (@metric_indices, @proj_column_headers);
     my $column_headers = $self->column_headers;
 
     for (my $i = 0; $i < @$column_headers; ++$i) {
@@ -58,13 +57,18 @@ sub project {
 
         if ($column_header->{column_type} eq 'METRIC') {
             push(@metric_indices, $i);
-            push(@column_names, $column_header->{name});
+            push(@proj_column_headers, { %$column_header });
         }
     }
 
-    push(@column_names, @$proj_dim_names);
+    for my $name (@$proj_dim_names) {
+        push(@proj_column_headers, {
+            name        => $name,
+            column_type => 'DIMENSION',
+        });
+    }
 
-    my $class = Net::Google::Analytics::Row->gen_class(@column_names);
+    my $class = Net::Google::Analytics::Row->gen_class(\@proj_column_headers);
 
     # Projected rows are collected in hash %proj_rows. The keys of the hash
     # are the the projected dimension values joined with zero bytes.

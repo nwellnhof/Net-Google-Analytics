@@ -6,40 +6,57 @@ BEGIN {
 
 my $class_count = 0;
 
-sub new {
-    my ($class, $row) = @_;
-    return bless($row, $class);
-}
-
-# We have to call import from the newly generated class
-sub _create_accessors {
-    shift; # ignore
-    Class::XSAccessor::Array->import(@_);
-}
-
 # Dynamically generate a class with accessors
 sub gen_class {
-    shift; # ignore
+    my (undef, $column_headers) = @_;
 
     # Generate unique package name
     my $class = "Net::Google::Analytics::Row_$class_count";
     ++$class_count;
 
     {
-        # Set ISA of new class
+        # Set globals of new class
         no strict 'refs';
-        @{ "${class}::ISA" } = qw(Net::Google::Analytics::Row);
+        @{ "${class}::ISA" }            = qw(Net::Google::Analytics::Row);
+        ${ "${class}::column_headers" } = $column_headers;
     }
 
     # Create accessors
     my %getters;
-    for (my $i = 0; $i < @_; ++$i) {
-        my $column_name = 'ga_' . $_[$i];
-        $getters{$column_name} = $i;
+    for (my $i = 0; $i < @$column_headers; ++$i) {
+        my $getter = 'ga_' . $column_headers->[$i]->{name};
+        $getters{$getter} = $i;
     }
-    $class->_create_accessors(getters => \%getters);
+    Class::XSAccessor::Array->import(
+        class   => $class,
+        getters => \%getters,
+    );
 
     return $class;
+}
+
+sub new {
+    my ($class, $row) = @_;
+    return bless($row, $class);
+}
+
+sub column_headers {
+    my $self = shift;
+    my $class = ref($self);
+    no strict 'refs';
+    return ${ "${class}::column_headers" };
+}
+
+sub get {
+    my ($self, $name) = @_;
+
+    my $column_headers = $self->column_headers;
+
+    for (my $i = 0; $i < @$column_headers; ++$i) {
+        return $self->[$i] if $column_headers->[$i]->{name} eq $name;
+    }
+
+    return undef;
 }
 
 1;
