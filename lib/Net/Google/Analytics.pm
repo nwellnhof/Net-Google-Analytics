@@ -160,7 +160,7 @@ sub retrieve_paged {
             $res = $page;
         }
         else {
-            push(@{ $res->entries }, @{ $page->entries });
+            push(@{ $res->rows }, @{ $page->rows });
         }
 
         my $items_per_page = $page->items_per_page;
@@ -170,7 +170,7 @@ sub retrieve_paged {
         $start_index     += $items_per_page;
     }
 
-    $res->items_per_page(scalar(@{ $res->entries }));
+    $res->items_per_page(scalar(@{ $res->rows }));
 
     return $res;
 }
@@ -182,23 +182,17 @@ __END__
 =head1 DESCRIPTION
 
 This module provides a simple, straight-forward interface to the Google
-Analytics Data Export API, using L<LWP::UserAgent> and L<XML::LibXML> for
-the heavy lifting.
+Analytics Core Reporting API, Version 3.
 
-See
-L<http://code.google.com/apis/analytics/docs/gdata/gdataDeveloperGuide.html>
+See L<http://code.google.com/apis/analytics/docs/gdata/home.html>
 for the complete API documentation.
 
 =head1 SYNOPSIS
 
     use Net::Google::Analytics;
-    use Net::Google::AuthSub;
-
-    my $auth = Net::Google::AuthSub->new(service => 'analytics');
-    $auth->login($user, $pass);
 
     my $analytics = Net::Google::Analytics->new();
-    $analytics->auth_params($auth->auth_params);
+    $analytics->auth_params(@auth_params);
 
     my $req = $analytics->new_request();
     # Insert your numeric Analytics profile ID here. You can find it under
@@ -212,24 +206,20 @@ for the complete API documentation.
     my $res = $analytics->retrieve($req);
     die("GA error: " . $res->status_line) if !$res->is_success;
 
-    for my $entry (@{ $res->entries }) {
-        my $dimensions = $entry->dimensions;
-        my $metrics    = $entry->metrics;
+    for my $row (@{ $res->rows }) {
         print
-            "year ",    $dimensions->[0]->value, ", ",
-            "month ",   $dimensions->[1]->value, ", ",
-            "country ", $dimensions->[2]->value, ": ",
-            $metrics->[0]->value, " visits, ",
-            $metrics->[1]->value, " pageviews\n";
+            "year ",    $row->get_year,    ", ",
+            "month ",   $row->get_month,   ", ",
+            "country ", $row->get_country, ": ",
+            $row->get_visits,    " visits, ",
+            $row->get_pageviews, " pageviews\n";
     }
 
 =head1 GETTING STARTED
 
 Net::Google::Analytics doesn't support authentication by itself. You simply
 pass it the HTTP headers needed for authorization using the L<auth_params>
-method. See the synopsis for how to quickly create authorization headers with
-L<Net::Google::AuthSub> using your username and password. But you can also
-authenticate with OAuth.
+method.
 
 You have to provide the profile ID of your Analytics profile with every
 request. You can find this decimal number hidden in the "profile settings"
@@ -247,85 +237,61 @@ you should consult the Google API documentation.
 
 =head2 new
 
- my $analytics = Net::Google::Analytics->new();
+    my $analytics = Net::Google::Analytics->new;
 
 The constructor doesn't take any arguments.
-
-=head1 ACCESSORS
-
-=head2 terminal
-
-Object that implements the following callback methods for interactive
-authentication:
-
-=head3 $terminal->auth_params
-
- my @auth_params = $terminal->auth_params();
-
-This method is called before a request and the result is stored in
-auth_params if auth_params has not been sent. It may return cached auth
-params.
-
-=head3 $terminal->new_auth_params
-
- my @auth_params = $terminal->new_auth_params($service, error => $error);
-
-This method is called if a HTTP request returns a 401 status
-code. Then auth_params is reset and the HTTP request is retried.
 
 =head1 METHODS
 
 =head2 auth_params
 
- $analytics->auth_params(@auth_params);
+    $analytics->auth_params(@auth_params);
 
 Set the authentication parameters as key/value pairs. The values returned
 from L<Net::Google::AuthSub/auth_params> can be used directly.
 
-=head2 user_agent
-
- $analytics->user_agent($ua);
-
-Sets the L<LWP::UserAgent> object to use for HTTP(S) requests. You only
-have to call this method if you want to provide your own user agent, e.g.
-to change the HTTP user agent header.
-
 =head2 new_request
 
- my $req = $analytics->new_request;
+    my $req = $analytics->new_request;
 
 Creates and returns a new L<Net::Google::Analytics::Request> object.
 
-=head2 uri
-
- my $uri = $analytics->uri($req);
-
-Returns the URI of the request. $req is a
-L<Net::Google::Analytics::Request> object. This method returns a L<URI>
-object.
-
 =head2 retrieve
 
- my $res = $analytics->retrieve($req);
+    my $res = $analytics->retrieve($req);
 
-Sends the request. $req is a
-L<Net::Google::Analytics::Request> object. You should use a request
-object returned from the L<new_request> method. This method returns a
-L<Net::Google::Analytics::Response> object.
+Sends the request. $req should be a L<Net::Google::Analytics::Request>
+object. This method returns a L<Net::Google::Analytics::Response> object.
 
-=head2 retrieve_xml
+=head2 retrieve_http
 
- my $res = $analytics->retrieve_xml($req);
+    my $res = $analytics->retrieve_http($req);
 
-Sending the request and returns a JSON object. $req is a
+Sends the request and returns an L<HTTP::Response> object. $req should be a
 L<Net::Google::Analytics::Request> object.
 
 =head2 retrieve_paged
 
- my $res = $analytics->retrieve_paged($req);
+    my $res = $analytics->retrieve_paged($req);
 
-Works like C<retrieve> but works around the per-request entry limit. This
+Works like C<retrieve> but works around the max-results limit. This
 method concatenates the results of multiple requests if necessary.
+
+=head2 uri
+
+    my $uri = $analytics->uri($req);
+
+Returns the URI of the request. $req should be a
+L<Net::Google::Analytics::Request> object. This method returns a L<URI>
+object.
+
+=head2 user_agent
+
+    $analytics->user_agent($ua);
+
+Sets the L<LWP::UserAgent> object to use for HTTP(S) requests. You only
+have to call this method if you want to provide your own user agent, e.g.
+to change the HTTP user agent header.
 
 =cut
 

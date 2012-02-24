@@ -61,24 +61,19 @@ __END__
 
 =head1 DESCRIPTION
 
-This package is a subclass of L<Net::Google::Analytics::FeedRequest> and
-implements data feed requests of the Google Analytics Data Export API.
-
-See
-L<http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDataFeed.html#dataRequest>
-for a reference.
+Request class for L<Net::Google::Analytics> web service.
 
 =head1 ACCESSORS
 
-=head2 start_index
-
-=head2 max_results
-
 =head2 ids
 
-=head2 dimensions
+=head2 start_date
+
+=head2 end_date
 
 =head2 metrics
+
+=head2 dimensions
 
 =head2 sort
 
@@ -86,9 +81,17 @@ for a reference.
 
 =head2 segment
 
-=head2 start_date
+=head2 start_index
 
-=head2 end_date
+=head2 max_results
+
+=head2 fields
+
+=head2 pretty_print
+
+=head2 user_ip
+
+=head2 quota_user
 
  $req->ids('ga:...');
  $req->dimensions('ga:...');

@@ -7,7 +7,7 @@ use Class::XSAccessor
     accessors => [ qw(
         is_success code message
         total_results start_index items_per_page
-        column_headers rows totals
+        _column_headers rows _totals
     ) ],
     constructor => 'new';
 
@@ -22,7 +22,7 @@ sub _parse_json {
 
     $self->items_per_page($json->{itemsPerPage});
     $self->total_results($json->{totalResults});
-    $self->totals($json->{totalsForAllResults});
+    $self->_totals($json->{totalsForAllResults});
 
     my @column_headers;
 
@@ -38,7 +38,7 @@ sub _parse_json {
         });
     }
 
-    $self->column_headers(\@column_headers);
+    $self->_column_headers(\@column_headers);
 
     my $class = Net::Google::Analytics::Row->gen_class(\@column_headers);
 
@@ -58,10 +58,16 @@ sub dimensions {
     return $self->_columns('DIMENSION');
 }
 
+sub totals {
+    my ($self, $metric) = @_;
+
+    return $self->_totals->{"ga:$metric"};
+}
+
 sub _columns {
     my ($self, $type) = @_;
 
-    my $column_headers = $self->column_headers;
+    my $column_headers = $self->_column_headers;
     my @results;
 
     for my $column_header (@$column_headers) {
@@ -77,7 +83,7 @@ sub project {
     my ($self, $proj_dim_names, $projection) = @_;
 
     my (@metric_indices, @proj_column_headers);
-    my $column_headers = $self->column_headers;
+    my $column_headers = $self->_column_headers;
 
     for (my $i = 0; $i < @$column_headers; ++$i) {
         my $column_header = $column_headers->[$i];
@@ -131,20 +137,13 @@ __END__
 
 =head1 DESCRIPTION
 
-This package is a subclass of L<Net::Google::Analytics::FeedResponse> and
-implements parts of the data feed response of the Google Analytics Data
-Export API. The entries in the feed response are of type
-L<Net::Google::Analytics::DataFeedEntry>.
-
-See
-L<http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDataFeed.html#dataResponse>
-for a complete reference.
+Response class for L<Net::Google::Analytics> web service.
 
 =head1 ACCESSORS
 
 =head2 is_success
 
-Return false in case of an error
+True for successful requests, false in case of an error
 
 =head2 code
 
@@ -153,6 +152,10 @@ The HTTP status code
 =head2 message
 
 The HTTP status message
+
+=head2 status_line
+
+The string "<code> <message>".
 
 =head2 total_results
 
@@ -165,52 +168,56 @@ The 1-based start index of the entries.
 
 =head2 items_per_page
 
-The number of entries.
+The number of rows.
 
-=head2 entries
+=head2 rows
 
-An arrayref of the entries.
+An arrayref of result rows.
 
-=head2 aggregates
+=head2 dimensions
 
- my $aggregates = $res->aggregates;
+An array of all dimension names (without 'ga:')
 
-Returns an arrayref of L<Net::Google::Analytics::Metric> objects.
+=head2 metrics
+
+An array of all metric names (without 'ga:')
 
 =head1 METHODS
 
-=head2 status_line
+=head2 totals
 
- my $status_line = $res->status_line();
+    my $total = $res->totals($metric);
 
-Returns the string "<code> <message>".
+Returns the total of all results for $metric.
 
 =head2 project
 
- $res->project($projection);
- $res->project(\&projection);
- $res->project(sub { ... });
+    $res->project(\@proj_dim_names, \&projection);
 
 Projects the dimension values of every entry to a set of new dimension values
-using subroutine reference $projection. The metrics of entries that are
+using subroutine reference \&projection. The metrics of entries that are
 mapped to the same dimension values are summed up.
 
-The projection subroutine takes as single argument an arrayref of dimension
-objects and must return an array of dimension values.
+Argument \@proj_dim_names is an arrayref containing the names of the
+new dimensions.
+
+The projection subroutine takes as single argument a
+L<Net::Google::Analytics::Row> object and must return an array of dimension
+values.
 
 The following example maps a single dimension of type ga:pagePath to
 categories.
 
- $res->project(sub {
-     my $dimensions = shift;
+    $res->project([ 'category' ], sub {
+        my $row = shift;
 
-     my $page_path = $dimensions->[0]->value;
+        my $page_path = $row->get_pagePath;
 
-     return ('flowers') if $page_path =~ m{^/(tulips|roses)};
-     return ('fruit')   if $page_path =~ m{^/(apples|oranges)};
+        return ('flowers') if $page_path =~ m{^/(tulips|roses)};
+        return ('fruit')   if $page_path =~ m{^/(apples|oranges)};
 
-     return ('other');
- });
+        return ('other');
+    });
 
 =cut
 

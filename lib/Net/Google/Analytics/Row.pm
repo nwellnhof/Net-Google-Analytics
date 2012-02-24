@@ -24,7 +24,7 @@ sub gen_class {
     # Create accessors
     my %getters;
     for (my $i = 0; $i < @$column_headers; ++$i) {
-        my $getter = 'ga_' . $column_headers->[$i]->{name};
+        my $getter = 'get_' . $column_headers->[$i]->{name};
         $getters{$getter} = $i;
     }
     Class::XSAccessor::Array->import(
@@ -60,4 +60,31 @@ sub get {
 }
 
 1;
+
+__END__
+
+=head1 DESCRIPTION
+
+Result row class for L<Net::Google::Analytics> web service.
+
+=head1 GENERATED ACCESSORS
+
+    my $year = $row->get_year;
+    my $page_path = $row->get_page_path;
+
+For every dimension and metric, an accessor of the form "get_..." is created.
+The 'ga:' prefix is stripped from the dimension and metric names and camel
+case is converted to lower case with underscores.
+
+=head1 METHODS
+
+=head2 get
+
+    my $value = $res->get($dimension_name);
+    my $value = $res->get($metric_name);
+
+Returns the value of the dimension or metric with the given name. Don't use
+the 'ga:' prefix.
+
+=cut
 

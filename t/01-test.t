@@ -1,7 +1,7 @@
 #!perl -w
 use strict;
 
-use Test::More tests => 31;
+use Test::More tests => 30;
 
 our $expect_url;
 our $content;
@@ -156,7 +156,7 @@ is($res->total_results, 6451, 'total_results');
 is($res->start_index, 1, 'start_index');
 is($res->items_per_page, 5, 'items_per_page');
 
-my $column_headers = $res->column_headers;
+my $column_headers = $res->_column_headers;
 ok($column_headers, 'column headers');
 is($column_headers->[0]->{name}, 'medium');
 is($column_headers->[2]->{column_type}, 'METRIC');
@@ -173,22 +173,18 @@ ok($rows, 'rows');
 
 is(@$rows, 5, 'count rows');
 
-is($rows->[0]->ga_medium, 'referral');
-is($rows->[1]->ga_source, 'google.com');
-is($rows->[2]->ga_visits, '4012');
-is($rows->[4]->ga_bounces, '1891');
+is($rows->[0]->get_medium, 'referral');
+is($rows->[1]->get_source, 'google.com');
+is($rows->[2]->get_visits, '4012');
+is($rows->[4]->get_bounces, '1891');
 is($rows->[3]->get('visits'), '2968');
 
-my $totals = $res->totals;
-ok($totals, 'totals');
-
-#is($totals->[0]->name, 'ga:visits');
-is($totals->{'ga:bounces'}, '101535');
+is($res->totals('bounces'), '101535');
 
 $res->project([ 'domain_style' ], sub {
     my $row = shift;
 
-    return $row->ga_source =~ /\.co\.[a-z]+\z/i ?
+    return $row->get_source =~ /\.co\.[a-z]+\z/i ?
         'dot-co-domain' :
         'other';
 });
@@ -199,13 +195,13 @@ ok($rows, 'rows');
 is(@$rows, 2, 'count rows');
 
 for my $row (@$rows) {
-    if ($row->ga_domain_style eq 'dot-co-domain') {
-        is($row->ga_visits, 5_761);
-        is($row->ga_bounces, 3_975);
+    if ($row->get_domain_style eq 'dot-co-domain') {
+        is($row->get_visits, 5_761);
+        is($row->get_bounces, 3_975);
     }
     else {
-        is($row->ga_visits, 101_818);
-        is($row->ga_bounces,  76_922);
+        is($row->get_visits, 101_818);
+        is($row->get_bounces,  76_922);
     }
 }
 
