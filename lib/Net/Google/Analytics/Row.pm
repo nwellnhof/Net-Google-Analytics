@@ -7,7 +7,7 @@ BEGIN {
 my $class_count = 0;
 
 # Dynamically generate a class with accessors
-sub gen_class {
+sub _gen_class {
     my (undef, $column_headers) = @_;
 
     # Generate unique package name
@@ -40,7 +40,7 @@ sub new {
     return bless($row, $class);
 }
 
-sub column_headers {
+sub _column_headers {
     my $self = shift;
     my $class = ref($self);
     no strict 'refs';
@@ -50,7 +50,7 @@ sub column_headers {
 sub get {
     my ($self, $name) = @_;
 
-    my $column_headers = $self->column_headers;
+    my $column_headers = $self->_column_headers;
 
     for (my $i = 0; $i < @$column_headers; ++$i) {
         return $self->[$i] if $column_headers->[$i]->{name} eq $name;

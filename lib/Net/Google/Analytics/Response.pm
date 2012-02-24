@@ -40,7 +40,7 @@ sub _parse_json {
 
     $self->_column_headers(\@column_headers);
 
-    my $class = Net::Google::Analytics::Row->gen_class(\@column_headers);
+    my $class = Net::Google::Analytics::Row->_gen_class(\@column_headers);
 
     my @rows = map { $class->new($_) } @{ $json->{rows} };
     $self->rows(\@rows);
@@ -101,7 +101,7 @@ sub project {
         });
     }
 
-    my $class = Net::Google::Analytics::Row->gen_class(\@proj_column_headers);
+    my $class = Net::Google::Analytics::Row->_gen_class(\@proj_column_headers);
 
     # Projected rows are collected in hash %proj_rows. The keys of the hash
     # are the the projected dimension values joined with zero bytes.
