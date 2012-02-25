@@ -93,3 +93,88 @@ EOF
 
 1;
 
+__END__
+
+=head1 DESCRIPTION
+
+OAuth2 class for L<Net::Google::Analytics> web service.
+
+=head1 SYNOPSIS
+
+    use Net::Google::Analytics;
+    use Net::Google::Analytics::OAuth2;
+
+    my $client_id     = "123456789012.apps.googleusercontent.com";
+    my $client_secret = "rAnDoMsEcReTrAnDoMsEcReT";
+    my $refresh_token = "RaNdOmSeCrEtRaNdOmSeCrEt";
+
+    my $analytics = Net::Google::Analytics->new;
+
+    # Authenticate
+    my $oauth = Net::Google::Analytics::OAuth2->new(
+        client_id     => $client_id,
+        client_secret => $client_secret,
+    );
+    my $token = $oauth->refresh_access_token($refresh_token);
+    $analytics->token($token);
+
+=head1 CONSTRUCTOR
+
+=head2 new
+
+    my $oauth = Net::Google::Analytics::OAuth2->new(
+        client_id     => $client_id,      # required
+        client_secret => $client_secret,  # required
+        redirect_uri  => $redirect_uri,
+    );
+
+Create a new object. Use the client id and client secret from the Google APIs
+Console. $redirect_uri is optional and defaults to 'urn:ietf:wg:oauth:2.0:oob'
+for installed applications.
+
+=head1 METHODS
+
+=head2 authorize_url
+
+    my $url = $oauth->authorize_url
+
+Returns a Google URL where the user can authenticate, authorize the
+application and retrieve an authorization code.
+
+=head2 get_access_token
+
+    my $token = $oauth->get_access_token($code);
+
+Retrieves an access token and a refresh token using an authorization code.
+Returns a hashref with the following entries:
+
+=head3 access_token
+
+=head3 refresh_token
+
+=head3 expires_in
+
+=head3 token_type
+
+=head2 refresh_access_token
+
+    my $token = $oauth->refresh_access_token($refresh_token);
+
+Retrieves a new access token using a refresh token. Returns a hashref with the
+following entries:
+
+=head3 access_token
+
+=head3 expires_in
+
+=head3 token_type
+
+=head2 interactive
+
+    $oauth->interactive;
+
+Obtain and print an access and refresh token interactively using the console.
+The user is prompted to visit a Google URL and enter a code from that page.
+
+=cut
+

@@ -156,23 +156,53 @@ __END__
 
 Response class for L<Net::Google::Analytics> web service.
 
+=head1 SYNOPSIS
+
+    my $res = $analytics->retrieve($req);
+    die("GA error: " . $res->error_message) if !$res->is_success;
+
+    print
+        "Results: 1 - ", $res->items_per_page,
+        " of ", $res->total_results, "\n\n";
+
+    for my $row (@{ $res->rows }) {
+        print
+            $row->get_source,  ": ",
+            $row->get_visits,  " visits, ",
+            $row->get_bounces, " bounces\n";
+    }
+
+    print
+        "\nTotal: ",
+        $res->totals("visits"),  " visits, ",
+        $res->totals("bounces"), " bounces\n";
+
+=head1 CONSTRUCTOR
+
+=head2 new
+
 =head1 ACCESSORS
 
 =head2 is_success
 
-True for successful requests, false in case of an error
+True for successful requests, false in case of an error.
 
 =head2 code
 
-The HTTP status code
+The HTTP status code.
 
 =head2 message
 
-The HTTP status message
+The HTTP status message.
+
+=head2 content
+
+In case of an error, this field contains a JSON string with additional
+information about the error from the response body.
 
 =head2 error_message
 
-The full error message
+The full error message.
 
 =head2 total_results
 
@@ -185,11 +215,11 @@ The 1-based start index of the entries.
 
 =head2 items_per_page
 
-The number of rows.
+The number of rows returned.
 
 =head2 rows
 
-An arrayref of result rows.
+An arrayref of result rows of type L<Net::Google::Analytics::Row>.
 
 =head2 dimensions
 
@@ -207,8 +237,9 @@ lower case with underscores.
 
     my $total = $res->totals($metric);
 
-Returns the total of all results for a metric. $metric is a metric name
-without the 'ga:' prefix and converted to lower case with underscores.
+Returns the sum of all results for a metric regardless of the actual subset
+of results returned. $metric is a metric name without the 'ga:' prefix and
+converted to lower case with underscores.
 
 =head2 project
 
@@ -231,7 +262,7 @@ categories.
     $res->project([ 'category' ], sub {
         my $row = shift;
 
-        my $page_path = $row->get_pagePath;
+        my $page_path = $row->get_page_path;
 
         return ('flowers') if $page_path =~ m{^/(tulips|roses)};
         return ('fruit')   if $page_path =~ m{^/(apples|oranges)};

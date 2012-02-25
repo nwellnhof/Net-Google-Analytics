@@ -173,7 +173,8 @@ Analytics Core Reporting API, Version 3.
 See L<http://code.google.com/apis/analytics/docs/gdata/home.html>
 for the complete API documentation.
 
-WARNING: This module is not API compatible with versions 0.11003 and below.
+WARNING: This module is not API compatible with the 0.x releases which target
+the legacy v2 API.
 
 =head1 SYNOPSIS
 
@@ -256,8 +257,10 @@ by running the following script with your client id and secret:
     $oauth->interactive;
 
 The script will display a URL and prompt for a code. Visit the URL in a
-browser and follow the directions to grant access to your application. Then
-you will be shown the code that you should enter in the Perl script.
+browser and follow the directions to grant access to your application. You will
+be shown the code that you should enter in the Perl script. Then the script
+retrieves and prints a refresh token which can be used for non-interactive
+access.
 
 You also have to provide the profile ID of your Analytics profile with every
 request. You can find this decimal number hidden in the "profile settings"

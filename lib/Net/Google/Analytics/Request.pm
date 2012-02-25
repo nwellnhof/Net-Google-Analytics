@@ -63,6 +63,31 @@ __END__
 
 Request class for L<Net::Google::Analytics> web service.
 
+=head1 SYNOPSIS
+
+    my $req = $analytics->new_request(
+        ids         => "ga:$profile_id",
+        dimensions  => "ga:medium,ga:source",
+        metrics     => "ga:bounces,ga:visits",
+        filters     => "ga:medium==referral",
+        sort        => "-ga:visits",
+        start_date  => "2011-10-01",
+        end_date    => "2011-10-31",
+        max_results => 5,
+    );
+
+    my $res = $analytics->retrieve($req);
+
+=head1 CONSTRUCTOR
+
+=head2 new
+
+    my $req = Net::Google::Analytics::Request->new(param => $value, ...);
+    my $req = $analytics->new_request(param => $value, ...);
+
+Creates a new request object with the given parameters. You can also use the
+shorthand L<Net::Google::Analytics/new_request>.
+
 =head1 ACCESSORS
 
 =head2 ids

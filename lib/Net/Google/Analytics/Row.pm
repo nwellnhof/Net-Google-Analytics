@@ -67,6 +67,10 @@ __END__
 
 Result row class for L<Net::Google::Analytics> web service.
 
+=head1 CONSTRUCTOR
+
+=head2 new
+
 =head1 GENERATED ACCESSORS
 
     my $year = $row->get_year;
