@@ -10,9 +10,6 @@ use Net::Google::Analytics::Response;
 use Net::Google::Analytics::Row;
 use URI;
 
-use Class::XSAccessor
-    accessors => [ 'terminal' ];
-
 sub new {
     my $package = shift;
 
@@ -31,6 +28,14 @@ sub auth_params {
     }
 
     return @$auth_params;
+}
+
+sub token {
+    my ($self, $token) = @_;
+
+    $self->{auth_params} = [
+        Authorization => "$token->{token_type} $token->{access_token}",
+    ];
 }
 
 sub user_agent {
@@ -78,31 +83,10 @@ sub uri {
 sub _retrieve_http {
     my ($self, $req, $start_index, $max_results) = @_;
 
-    my $uri = $self->_uri($req, $start_index, $max_results);
+    my $uri         = $self->_uri($req, $start_index, $max_results);
     my @auth_params = $self->auth_params;
-    my $terminal = $self->terminal;
 
-    if (!@auth_params && $terminal) {
-        @auth_params = $terminal->auth_params('analytics');
-        $self->auth_params(@auth_params);
-    }
-
-    my $http_res;
-
-    while (1) {
-        $http_res = $self->user_agent->get($uri->as_string, @auth_params);
-        last if
-            $http_res->is_success ||
-            $http_res->code ne '401' ||
-            !$terminal;
-
-        @auth_params = $terminal->new_auth_params('analytics',
-            error => $http_res->message,
-        );
-        $self->auth_params(@auth_params);
-    }
-
-    return $http_res;
+    return $self->user_agent->get($uri->as_string, @auth_params);
 }
 
 sub retrieve_http {
@@ -116,11 +100,11 @@ sub _retrieve {
 
     my $http_res = $self->_retrieve_http($req, $start_index, $max_results);
     my $res = Net::Google::Analytics::Response->new;
+    $res->code($http_res->code);
+    $res->message($http_res->message);
 
     if (!$http_res->is_success) {
-        $res->code($http_res->code);
-        $res->message($http_res->message);
-
+        $res->content($http_res->decoded_content);
         return $res;
     }
 
@@ -217,11 +201,31 @@ for the complete API documentation.
 
 =head1 GETTING STARTED
 
-Net::Google::Analytics doesn't support authentication by itself. You simply
-pass it the HTTP headers needed for authorization using the L<auth_params>
-method.
+L<Net::Google::Analytics::OAuth2> provides for easy authentication and
+authorization using OAuth 2.0. First, you have to register your application
+through the Google APIs Console:
 
-You have to provide the profile ID of your Analytics profile with every
+L<https://code.google.com/apis/console/>
+
+You will receive a client id and a client secret for your application in the
+APIs Console. For command line testing, you should use "Installed application"
+as application type. Then you can get a refresh token for your application
+by running the following script with your client id and secret:
+
+    use Net::Google::Analytics::OAuth2;
+
+    my $oauth = Net::Google::Analytics::OAuth2->new(
+        client_id     => 'Your client id',
+        client_secret => 'Your client secret',
+    );
+
+    $oauth->interactive;
+
+The script will display a URL and prompt for a code. Visit the URL in a
+browser and follow the directions to grant access to your application. Then
+you will be shown the code that you should enter in the Perl script.
+
+You also have to provide the profile ID of your Analytics profile with every
 request. You can find this decimal number hidden in the "profile settings"
 dialog in Google Analytics. Note that this ID is different from your account or
 property ID of the form UA-nnnnnn-n. Prepend your profile ID with "ga:" and
@@ -249,6 +253,12 @@ The constructor doesn't take any arguments.
 
 Set the authentication parameters as key/value pairs. The values returned
 from L<Net::Google::AuthSub/auth_params> can be used directly.
+
+=head2 token
+
+    $analytics->token($token);
+
+Authenticate using a token returned from L<Net::Google::Analytics::OAuth2>.
 
 =head2 new_request
 

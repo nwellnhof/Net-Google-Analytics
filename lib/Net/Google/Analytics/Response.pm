@@ -5,16 +5,16 @@ use strict;
 
 use Class::XSAccessor
     accessors => [ qw(
-        is_success code message
+        is_success code message content
         total_results start_index items_per_page
         _column_headers rows _totals
     ) ],
     constructor => 'new';
 
-sub status_line {
+sub error_message {
     my $self = shift;
 
-    return join(' ', $self->code, $self->message);
+    return join(' ', $self->code,  $self->message, $self->content);
 }
 
 sub _parse_json {
@@ -170,9 +170,9 @@ The HTTP status code
 
 The HTTP status message
 
-=head2 status_line
+=head2 error_message
 
-The string "<code> <message>".
+The full error message
 
 =head2 total_results
 
