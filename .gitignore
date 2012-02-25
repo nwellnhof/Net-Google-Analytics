@@ -1,4 +1,3 @@
-.*.swp
-.build/
-Net-Google-Analytics-*/
-Net-Google-Analytics-*.tar.gz
+/.build/
+/Net-Google-Analytics-*/
+/Net-Google-Analytics-*.tar.gz
