@@ -1,5 +1,7 @@
 package Net::Google::Analytics::Row;
 
+# ABSTRACT: Base class for Google Analytics API result rows
+
 BEGIN {
     require Class::XSAccessor::Array;
 }
