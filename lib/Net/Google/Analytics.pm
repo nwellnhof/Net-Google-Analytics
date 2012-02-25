@@ -173,6 +173,8 @@ Analytics Core Reporting API, Version 3.
 See L<http://code.google.com/apis/analytics/docs/gdata/home.html>
 for the complete API documentation.
 
+WARNING: This module is not API compatible with versions 0.11003 and below.
+
 =head1 SYNOPSIS
 
     use Net::Google::Analytics;
