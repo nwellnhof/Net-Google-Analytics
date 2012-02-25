@@ -55,7 +55,9 @@ sub user_agent {
 }
 
 sub new_request {
-    return Net::Google::Analytics::Request->new;
+    my $self = shift;
+
+    return Net::Google::Analytics::Request->new(@_);
 }
 
 sub _uri {
@@ -174,30 +176,60 @@ for the complete API documentation.
 =head1 SYNOPSIS
 
     use Net::Google::Analytics;
+    use Net::Google::Analytics::OAuth2;
 
-    my $analytics = Net::Google::Analytics->new();
-    $analytics->auth_params(@auth_params);
-
-    my $req = $analytics->new_request();
     # Insert your numeric Analytics profile ID here. You can find it under
     # profile settings. DO NOT use your account or property ID (UA-nnnnnn).
-    $req->ids('ga:1234567'); # your Analytics profile ID
-    $req->dimensions('ga:year,ga:month,ga:country');
-    $req->metrics('ga:visits,ga:pageviews');
-    $req->start_date('2011-01-01');
-    $req->end_date('2011-12-31');
+    my $profile_id    = "1234567";
+    # See GETTING STARTED for how to get a client id, client secret, and
+    # refresh token
+    my $client_id     = "123456789012.apps.googleusercontent.com";
+    my $client_secret = "rAnDoMsEcReTrAnDoMsEcReT";
+    my $refresh_token = "RaNdOmSeCrEtRaNdOmSeCrEt";
 
+    my $analytics = Net::Google::Analytics->new;
+
+    # Authenticate
+    my $oauth = Net::Google::Analytics::OAuth2->new(
+        client_id     => $client_id,
+        client_secret => $client_secret,
+    );
+    my $token = $oauth->refresh_access_token($refresh_token);
+    $analytics->token($token);
+
+    # Build request
+    my $req = $analytics->new_request(
+        ids         => "ga:$profile_id",
+        dimensions  => "ga:medium,ga:source",
+        metrics     => "ga:bounces,ga:visits",
+        filters     => "ga:medium==referral",
+        sort        => "-ga:visits",
+        start_date  => "2011-10-01",
+        end_date    => "2011-10-31",
+        max_results => 5,
+    );
+
+    # Send request
     my $res = $analytics->retrieve($req);
-    die("GA error: " . $res->status_line) if !$res->is_success;
+    die("GA error: " . $res->error_message) if !$res->is_success;
+
+    # Print results
+
+    print
+        "Results: 1 - ", $res->items_per_page,
+        " of ", $res->total_results, "\n\n";
 
     for my $row (@{ $res->rows }) {
         print
-            "year ",    $row->get_year,    ", ",
-            "month ",   $row->get_month,   ", ",
-            "country ", $row->get_country, ": ",
-            $row->get_visits,    " visits, ",
-            $row->get_pageviews, " pageviews\n";
+            $row->get_source,  ": ",
+            $row->get_visits,  " visits, ",
+            $row->get_bounces, " bounces\n";
     }
+
+    print
+        "\nTotal: ",
+        $res->totals("visits"),  " visits, ",
+        $res->totals("bounces"), " bounces\n";
 
 =head1 GETTING STARTED
 
@@ -209,7 +241,7 @@ L<https://code.google.com/apis/console/>
 
 You will receive a client id and a client secret for your application in the
 APIs Console. For command line testing, you should use "Installed application"
-as application type. Then you can get a refresh token for your application
+as application type. Then you can obtain a refresh token for your application
 by running the following script with your client id and secret:
 
     use Net::Google::Analytics::OAuth2;
@@ -229,7 +261,7 @@ You also have to provide the profile ID of your Analytics profile with every
 request. You can find this decimal number hidden in the "profile settings"
 dialog in Google Analytics. Note that this ID is different from your account or
 property ID of the form UA-nnnnnn-n. Prepend your profile ID with "ga:" and
-pass it to the "ids" method of the request object.
+pass it as "ids" parameter to the request object.
 
 The "ids", "metrics", "start_date", and "end_date" parameters are required for
 every request.
@@ -251,8 +283,8 @@ The constructor doesn't take any arguments.
 
     $analytics->auth_params(@auth_params);
 
-Set the authentication parameters as key/value pairs. The values returned
-from L<Net::Google::AuthSub/auth_params> can be used directly.
+Set the raw authentication parameters as key/value pairs. These will we sent
+as HTTP headers.
 
 =head2 token
 
@@ -262,7 +294,7 @@ Authenticate using a token returned from L<Net::Google::Analytics::OAuth2>.
 
 =head2 new_request
 
-    my $req = $analytics->new_request;
+    my $req = $analytics->new_request(param => $value, ...);
 
 Creates and returns a new L<Net::Google::Analytics::Request> object.
 
@@ -270,14 +302,14 @@ Creates and returns a new L<Net::Google::Analytics::Request> object.
 
     my $res = $analytics->retrieve($req);
 
-Sends the request. $req should be a L<Net::Google::Analytics::Request>
+Sends the request. $req must be a L<Net::Google::Analytics::Request>
 object. This method returns a L<Net::Google::Analytics::Response> object.
 
 =head2 retrieve_http
 
     my $res = $analytics->retrieve_http($req);
 
-Sends the request and returns an L<HTTP::Response> object. $req should be a
+Sends the request and returns an L<HTTP::Response> object. $req must be a
 L<Net::Google::Analytics::Request> object.
 
 =head2 retrieve_paged
@@ -291,7 +323,7 @@ method concatenates the results of multiple requests if necessary.
 
     my $uri = $analytics->uri($req);
 
-Returns the URI of the request. $req should be a
+Returns the URI of the request. $req must be a
 L<Net::Google::Analytics::Request> object. This method returns a L<URI>
 object.
 
@@ -300,8 +332,7 @@ object.
     $analytics->user_agent($ua);
 
 Sets the L<LWP::UserAgent> object to use for HTTP(S) requests. You only
-have to call this method if you want to provide your own user agent, e.g.
-to change the HTTP user agent header.
+have to call this method if you want to provide your own user agent.
 
 =cut
 
