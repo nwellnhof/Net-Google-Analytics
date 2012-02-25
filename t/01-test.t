@@ -21,13 +21,10 @@ sub get {
     return $self;
 }
 
-sub is_success {
-    return 1;
-}
-
-sub decoded_content {
-    return $content;
-}
+sub is_success      { return 1; }
+sub code            { return 200; }
+sub message         { return 'Success'; }
+sub decoded_content { return $content; }
 
 use_ok("Net::Google::Analytics");
 
