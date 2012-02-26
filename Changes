@@ -1,6 +1,6 @@
 Revision history for Perl module Net::Google::Analytics 
 
-3.00  2012-xx-xx
+3.00  2012-02-26
         - Major rewrite implementing the version 3 API
 
 0.11003
