@@ -1,4 +1,5 @@
 package Net::Google::Analytics::Row;
+use strict;
 
 # ABSTRACT: Base class for Google Analytics API result rows
 
