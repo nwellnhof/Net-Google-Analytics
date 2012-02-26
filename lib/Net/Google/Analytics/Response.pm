@@ -5,9 +5,14 @@ use strict;
 
 use Class::XSAccessor
     accessors => [ qw(
-        is_success code message content
+        is_success
+        code message content
         total_results start_index items_per_page
-        _column_headers rows _totals
+        contains_sampled_data
+        profile_info
+        rows
+        _column_headers
+        _totals
     ) ],
     constructor => 'new';
 
@@ -22,6 +27,8 @@ sub _parse_json {
 
     $self->items_per_page($json->{itemsPerPage});
     $self->total_results($json->{totalResults});
+    $self->contains_sampled_data($json->{containsSampledData});
+    $self->profile_info($json->{profileInfo});
 
     my $json_totals = $json->{totalsForAllResults};
     my %totals;
@@ -216,6 +223,14 @@ The 1-based start index of the entries.
 =head2 items_per_page
 
 The number of rows returned.
+
+=head2 contains_sampled_data
+
+Return true if the results contain sampled data.
+
+=head2 profile_info
+
+Returns a hashref containing information about the analytics profile.
 
 =head2 rows
 

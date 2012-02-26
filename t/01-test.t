@@ -1,7 +1,7 @@
 #!perl -w
 use strict;
 
-use Test::More tests => 31;
+use Test::More tests => 33;
 
 our $expect_url;
 our $content;
@@ -152,6 +152,8 @@ ok($res->is_success, 'retrieve success');
 is($res->total_results, 6451, 'total_results');
 is($res->start_index, 1, 'start_index');
 is($res->items_per_page, 5, 'items_per_page');
+ok(!$res->contains_sampled_data, 'contains_sampled_data');
+is($res->profile_info->{profileName}, 'Test Profile', 'profile_info');
 
 my $column_headers = $res->_column_headers;
 ok($column_headers, 'column headers');
