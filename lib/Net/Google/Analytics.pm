@@ -238,9 +238,7 @@ the legacy v2 API.
 
 L<Net::Google::Analytics::OAuth2> provides for easy authentication and
 authorization using OAuth 2.0. First, you have to register your application
-through the Google APIs Console:
-
-L<https://code.google.com/apis/console/>
+through the L<Google APIs Console|https://code.google.com/apis/console/>.
 
 You will receive a client id and a client secret for your application in the
 APIs Console. For command line testing, you should use "Installed application"

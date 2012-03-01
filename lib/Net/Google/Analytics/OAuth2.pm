@@ -136,7 +136,7 @@ for installed applications.
 
 =head2 authorize_url
 
-    my $url = $oauth->authorize_url
+    my $url = $oauth->authorize_url;
 
 Returns a Google URL where the user can authenticate, authorize the
 application and retrieve an authorization code.

@@ -87,8 +87,8 @@ case is converted to lower case with underscores.
 
 =head2 get
 
-    my $value = $res->get($dimension_name);
-    my $value = $res->get($metric_name);
+    my $value = $row->get($dimension_name);
+    my $value = $row->get($metric_name);
 
 Returns the value of the dimension or metric with the given name. Use names
 without the 'ga:' prefix and converted to lower case with underscores.

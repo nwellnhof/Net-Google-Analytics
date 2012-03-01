@@ -90,13 +90,29 @@ shorthand L<Net::Google::Analytics/new_request>.
 
 =head1 ACCESSORS
 
+    $req->ids('ga:...');
+    $req->dimensions('ga:...');
+
+See the
+L<API reference|http://code.google.com/apis/analytics/docs/gdata/v3/reference.html#data_request>
+for a description of the request parameters. The provided parameter values must
+not be URL encoded.
+
 =head2 ids
+
+Required
 
 =head2 start_date
 
+Required
+
 =head2 end_date
 
+Required
+
 =head2 metrics
+
+Required
 
 =head2 dimensions
 
@@ -117,12 +133,6 @@ shorthand L<Net::Google::Analytics/new_request>.
 =head2 user_ip
 
 =head2 quota_user
-
- $req->ids('ga:...');
- $req->dimensions('ga:...');
-
-See the API reference for a description of the request parameters. The
-provided parameter values must not be URL encoded.
 
 =cut
 
