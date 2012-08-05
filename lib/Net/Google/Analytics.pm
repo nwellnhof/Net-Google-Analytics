@@ -156,7 +156,10 @@ sub retrieve_paged {
         $start_index     += $num_items;
     }
 
-    $res->items_per_page(scalar(@{ $res->rows }));
+    my $total_items = @{ $res->rows };
+    $res->items_per_page($total_items);
+    # The total result count of the first page isn't always accurate
+    $res->total_results($total_items);
 
     return $res;
 }
