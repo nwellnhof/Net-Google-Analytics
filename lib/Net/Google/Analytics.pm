@@ -149,11 +149,11 @@ sub retrieve_paged {
             push(@{ $res->rows }, @{ $page->rows });
         }
 
-        my $items_per_page = $page->items_per_page;
-        last if $items_per_page < $max_results;
+        my $num_items = @{ $page->rows };
+        last if $num_items < $max_results;
 
-        $remaining_items -= $items_per_page if defined($remaining_items);
-        $start_index     += $items_per_page;
+        $remaining_items -= $num_items if defined($remaining_items);
+        $start_index     += $num_items;
     }
 
     $res->items_per_page(scalar(@{ $res->rows }));
