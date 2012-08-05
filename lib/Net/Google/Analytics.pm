@@ -141,6 +141,7 @@ sub retrieve_paged {
                 $remaining_items : $max_items_per_page;
 
         my $page = $self->_retrieve($req, $start_index, $max_results);
+        return $page if !$page->is_success;
 
         if (!defined($res)) {
             $res = $page;
