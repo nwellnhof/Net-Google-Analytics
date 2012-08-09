@@ -1,8 +1,9 @@
 Revision history for Perl module Net::Google::Analytics 
 
-3.01
-        - RT #78789: Fixes for request_paged
+3.01  2012-08-09
+        - RT #78789: Fixes for retrieve_paged
           Thanks to Jon Schutz for the report
+        - Documentation fixes
 
 3.00  2012-02-26
         - Major rewrite implementing the version 3 API
