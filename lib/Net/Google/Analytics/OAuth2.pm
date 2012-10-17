@@ -21,6 +21,7 @@ sub new {
 
 sub authorize_url {
     my $self = shift;
+    my $more_params = (@_ > 1) ? { @_ } : ($_[0] || {});
 
     my $uri = URI->new('https://accounts.google.com/o/oauth2/auth');
     $uri->query_form(
@@ -28,6 +29,7 @@ sub authorize_url {
         client_id     => $self->{client_id},
         redirect_uri  => $self->{redirect_uri},
         scope         => 'https://www.googleapis.com/auth/analytics.readonly',
+        %$more_params,
     );
 
     return $uri->as_string;
@@ -136,10 +138,11 @@ for installed applications.
 
 =head2 authorize_url
 
-    my $url = $oauth->authorize_url;
+    my $url = $oauth->authorize_url({ access_type => 'offline' });
 
 Returns a Google URL where the user can authenticate, authorize the
 application and retrieve an authorization code.
+Provide optional parameters to add more query string parameters on.
 
 =head2 get_access_token
 
@@ -177,4 +180,3 @@ Obtain and print an access and refresh token interactively using the console.
 The user is prompted to visit a Google URL and enter a code from that page.
 
 =cut
-
