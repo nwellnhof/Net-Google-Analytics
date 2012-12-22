@@ -1,7 +1,7 @@
 #!perl -w
 use strict;
 
-use Test::More tests => 42;
+use Test::More tests => 44;
 
 our $expect_url;
 our $content;
@@ -149,6 +149,7 @@ $res = $analytics->retrieve($req);
 ok($res, 'retrieve data');
 ok($res->is_success, 'retrieve success');
 
+is($res->num_rows, 5, 'num_rows');
 is($res->total_results, 6451, 'total_results');
 is($res->start_index, 1, 'start_index');
 is($res->items_per_page, 5, 'items_per_page');
@@ -192,6 +193,7 @@ my $projection = $res->project([ 'domain_style' ], sub {
 
 ok($projection, 'projection');
 ok($projection->is_success, 'is_success of projection');
+is($projection->num_rows, 2, 'num_rows of projection');
 is($projection->total_results, 2, 'total_results of projection');
 is($projection->start_index, 1, 'start_index of projection');
 is($projection->items_per_page, 2, 'items_per_page of projection');

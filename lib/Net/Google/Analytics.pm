@@ -223,7 +223,7 @@ the legacy v2 API.
     # Print results
 
     print
-        "Results: 1 - ", $res->items_per_page,
+        "Results: 1 - ", $res->num_rows,
         " of ", $res->total_results, "\n\n";
 
     for my $row (@{ $res->rows }) {

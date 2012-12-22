@@ -1,6 +1,7 @@
 Revision history for Perl module Net::Google::Analytics 
 
 Next release
+        - Add $response->num_rows method
         - Allow additional parameters to authorize_url
           (Thanks to Masakazu Ohtsuka for the patch)
 

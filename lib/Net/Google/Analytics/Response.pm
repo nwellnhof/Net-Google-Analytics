@@ -70,6 +70,12 @@ sub _parse_column_name {
     return $res;
 }
 
+sub num_rows {
+    my $self = shift;
+
+    return scalar(@{ $self->rows });
+}
+
 sub metrics {
     my $self = shift;
 
@@ -179,7 +185,7 @@ Response class for L<Net::Google::Analytics> web service.
     die("GA error: " . $res->error_message) if !$res->is_success;
 
     print
-        "Results: 1 - ", $res->items_per_page,
+        "Results: 1 - ", $res->num_rows,
         " of ", $res->total_results, "\n\n";
 
     for my $row (@{ $res->rows }) {
@@ -241,6 +247,10 @@ Returns true if the results contain sampled data.
 =head2 profile_info
 
 A hashref containing information about the analytics profile.
+
+=head2 num_rows
+
+The number of rows on this result page.
 
 =head2 rows
 
