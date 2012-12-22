@@ -20,7 +20,8 @@ sub new {
 }
 
 sub authorize_url {
-    my $self = shift;
+    my $self         = shift;
+    my $extra_params = @_ == 1 ? $_[0] : { @_ };
 
     my $uri = URI->new('https://accounts.google.com/o/oauth2/auth');
     $uri->query_form(
@@ -28,6 +29,7 @@ sub authorize_url {
         client_id     => $self->{client_id},
         redirect_uri  => $self->{redirect_uri},
         scope         => 'https://www.googleapis.com/auth/analytics.readonly',
+        %$extra_params,
     );
 
     return $uri->as_string;
@@ -136,10 +138,13 @@ for installed applications.
 
 =head2 authorize_url
 
-    my $url = $oauth->authorize_url;
+    my $url = $oauth->authorize_url(%extra_params);
+    my $url = $oauth->authorize_url(\%extra_params);
 
 Returns a Google URL where the user can authenticate, authorize the
-application and retrieve an authorization code.
+application and retrieve an authorization code. %extra_params can be used to
+pass additional authorization parameters. See
+L<https://developers.google.com/accounts/docs/OAuth2WebServer#formingtheurl>.
 
 =head2 get_access_token
 
