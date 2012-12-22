@@ -152,7 +152,17 @@ sub project {
         }
     }
 
-    $self->rows([ values(%proj_rows) ]);
+    my @rows = values(%proj_rows);
+
+    return Net::Google::Analytics::Response->new(
+        is_success      => 1,
+        total_results   => scalar(@rows),
+        start_index     => 1,
+        items_per_page  => scalar(@rows),
+        rows            => \@rows,
+        _totals         => $self->_totals,
+        _column_headers => \@proj_column_headers,
+    );
 }
 
 1;
@@ -258,7 +268,7 @@ converted to lower case with underscores.
 
 =head2 project
 
-    $res->project(\@proj_dim_names, \&projection);
+    my $projected = $res->project(\@proj_dim_names, \&projection);
 
 Projects the dimension values of every result row to new dimension values using
 subroutine reference \&projection. The metrics of rows that are mapped to the
@@ -271,10 +281,12 @@ The projection subroutine takes as single argument a
 L<Net::Google::Analytics::Row> object and must return an array of dimension
 values.
 
+Returns a new response object.
+
 The following example maps a single dimension of type ga:pagePath to
 categories.
 
-    $res->project([ 'category' ], sub {
+    my $projected = $res->project([ 'category' ], sub {
         my $row = shift;
 
         my $page_path = $row->get_page_path;
