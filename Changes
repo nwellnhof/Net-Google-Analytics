@@ -1,7 +1,8 @@
 Revision history for Perl module Net::Google::Analytics 
 
-Next release
+3.02  2014-01-07
         - Add $response->num_rows method
+        - Make $response->project return a new response object
         - Allow additional parameters to authorize_url
           (Thanks to Masakazu Ohtsuka for the patch)
 
