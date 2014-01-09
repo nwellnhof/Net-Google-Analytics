@@ -60,10 +60,20 @@ sub new_request {
     return Net::Google::Analytics::Request->new(@_);
 }
 
+sub new_realtime_request {
+    my $self = shift;
+
+    my %params = @_;
+    $params{realtime} = 1;
+
+    return Net::Google::Analytics::Request->new(%params);
+}
+
+
 sub _uri {
     my ($self, $req, $start_index, $max_results) = @_;
 
-    my $uri = URI->new('https://www.googleapis.com/analytics/v3/data/ga');
+    my $uri = URI->new(  'https://www.googleapis.com/analytics/v3/data/' . ( $req->realtime() ? 'realtime' : 'ga' ) );
     my @params;
     push(@params, 'start-index' => $start_index) if defined($start_index);
     push(@params, 'max-results' => $max_results) if defined($max_results);
@@ -304,6 +314,13 @@ Authenticate using a token returned from L<Net::Google::Analytics::OAuth2>.
     my $req = $analytics->new_request(param => $value, ...);
 
 Creates and returns a new L<Net::Google::Analytics::Request> object.
+
+=head2 new_realtime_request
+
+    my $req = $analytics->new_realtime_request(param => $value, ...);
+
+Creates and returns a new L<Net::Google::Analytics::Request> object, calling retrieve 
+on this request object will cause the request to use the google realtime analytics url.
 
 =head2 retrieve
 

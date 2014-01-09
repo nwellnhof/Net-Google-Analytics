@@ -14,7 +14,7 @@ use Class::XSAccessor
         start_index max_results
         fields
         pretty_print
-        user_ip quota_user
+        user_ip quota_user realtime
     ) ],
     constructor => 'new';
 
@@ -30,13 +30,20 @@ my @param_map = (
     fields       => 'fields',
     pretty_print => 'prettyPrint',
     user_ip      => 'userIp',
-    quota_user   => 'quotaUser',
+    quota_user   => 'quotaUser'
 );
 
 sub _params {
     my $self = shift;
 
-    for my $name (qw(ids metrics start_date end_date)) {
+    my @required = qw(ids metrics);
+
+    unless ($self->{realtime})
+    {
+        @required = (qw( start_date end_date ), @required);
+    }
+
+    for my $name ( @required ) {
         my $value = $self->{$name};
         die("parameter $name is empty")
             if !defined($value) || $value eq '';
