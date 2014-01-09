@@ -6,6 +6,7 @@ use warnings;
 
 use Class::XSAccessor
     accessors => [ qw(
+        realtime
         ids
         start_date end_date
         metrics dimensions
@@ -37,7 +38,13 @@ my @param_map = (
 sub _params {
     my $self = shift;
 
-    for my $name (qw(ids metrics start_date end_date)) {
+    my @required = qw(ids metrics);
+
+    if (!$self->{realtime}) {
+        push(@required, qw(start_date end_date));
+    }
+
+    for my $name (@required) {
         my $value = $self->{$name};
         die("parameter $name is empty")
             if !defined($value) || $value eq '';
@@ -99,17 +106,21 @@ L<API reference|http://code.google.com/apis/analytics/docs/gdata/v3/reference.ht
 for a description of the request parameters. The provided parameter values must
 not be URL encoded.
 
+=head2 realtime
+
+Set this parameter to use the Real Time Reporting API.
+
 =head2 ids
 
 Required
 
 =head2 start_date
 
-Required
+Required for non-realtime requests
 
 =head2 end_date
 
-Required
+Required for non-realtime requests
 
 =head2 metrics
 

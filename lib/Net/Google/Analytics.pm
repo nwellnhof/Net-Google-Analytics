@@ -64,7 +64,10 @@ sub new_request {
 sub _uri {
     my ($self, $req, $start_index, $max_results) = @_;
 
-    my $uri = URI->new('https://www.googleapis.com/analytics/v3/data/ga');
+    my $service = $req->realtime ? 'realtime' : 'ga';
+    my $uri = URI->new(
+        "https://www.googleapis.com/analytics/v3/data/$service"
+    );
     my @params;
     push(@params, 'start-index' => $start_index) if defined($start_index);
     push(@params, 'max-results' => $max_results) if defined($max_results);
