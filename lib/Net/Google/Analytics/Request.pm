@@ -1,5 +1,6 @@
 package Net::Google::Analytics::Request;
 use strict;
+use warnings;
 
 # ABSTRACT: Google Analytics API request
 

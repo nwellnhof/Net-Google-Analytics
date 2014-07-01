@@ -1,5 +1,6 @@
 package Net::Google::Analytics::OAuth2;
 use strict;
+use warnings;
 
 # ABSTRACT: OAuth2 for Google Analytics API
 

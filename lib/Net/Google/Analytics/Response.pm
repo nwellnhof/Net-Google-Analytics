@@ -1,5 +1,6 @@
 package Net::Google::Analytics::Response;
 use strict;
+use warnings;
 
 # ABSTRACT: Google Analytics API response
 

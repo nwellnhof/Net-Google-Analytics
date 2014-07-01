@@ -1,5 +1,6 @@
 package Net::Google::Analytics;
 use strict;
+use warnings;
 
 # ABSTRACT: Simple interface to the Google Analytics Core Reporting API
 
