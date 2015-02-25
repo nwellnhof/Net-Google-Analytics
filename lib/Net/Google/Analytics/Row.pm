@@ -1,4 +1,5 @@
 package Net::Google::Analytics::Row;
+
 use strict;
 use warnings;
 

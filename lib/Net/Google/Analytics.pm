@@ -1,4 +1,5 @@
 package Net::Google::Analytics;
+
 use strict;
 use warnings;
 

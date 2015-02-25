@@ -1,4 +1,5 @@
 package Net::Google::Analytics::Response;
+
 use strict;
 use warnings;
 
