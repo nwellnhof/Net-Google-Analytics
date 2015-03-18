@@ -1,5 +1,9 @@
 Revision history for Perl module Net::Google::Analytics 
 
+3.03  2015-03-18
+        - Add support for the Realtime Analytics API
+          (Thanks to Andy (yacomink) for the initial patch)
+
 3.02  2014-01-07
         - Add $response->num_rows method
         - Make $response->project return a new response object
