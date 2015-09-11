@@ -16,24 +16,26 @@ use Class::XSAccessor
         segment
         start_index max_results
         fields
+        sampling_level
         pretty_print
         user_ip quota_user
     ) ],
     constructor => 'new';
 
 my @param_map = (
-    ids          => 'ids',
-    start_date   => 'start-date',
-    end_date     => 'end-date',
-    metrics      => 'metrics',
-    dimensions   => 'dimensions',
-    sort         => 'sort',
-    filters      => 'filters',
-    segment      => 'segment',
-    fields       => 'fields',
-    pretty_print => 'prettyPrint',
-    user_ip      => 'userIp',
-    quota_user   => 'quotaUser',
+    ids            => 'ids',
+    start_date     => 'start-date',
+    end_date       => 'end-date',
+    metrics        => 'metrics',
+    dimensions     => 'dimensions',
+    sort           => 'sort',
+    filters        => 'filters',
+    segment        => 'segment',
+    fields         => 'fields',
+    sampling_level => 'samplingLevel',
+    pretty_print   => 'prettyPrint',
+    user_ip        => 'userIp',
+    quota_user     => 'quotaUser',
 );
 
 sub _params {
@@ -134,6 +136,8 @@ Required
 =head2 filters
 
 =head2 segment
+
+=head2 sampling_level
 
 =head2 start_index
 

@@ -49,8 +49,9 @@ $req->start_index(1);
 $req->max_results(20);
 $req->start_date('2010-01-01');
 $req->end_date('2010-01-31');
+$req->sampling_level('HIGHER_PRECISION');
 
-$expect_url = 'https://www.googleapis.com/analytics/v3/data/ga?ids=ga%3A1234567&start-date=2010-01-01&end-date=2010-01-31&metrics=ga%3Avisits&dimensions=ga%3Acountry&sort=-ga%3Avisits&start-index=1&max-results=20';
+$expect_url = 'https://www.googleapis.com/analytics/v3/data/ga?ids=ga%3A1234567&start-date=2010-01-01&end-date=2010-01-31&metrics=ga%3Avisits&dimensions=ga%3Acountry&sort=-ga%3Avisits&samplingLevel=HIGHER_PRECISION&start-index=1&max-results=20';
 $content = <<'EOF';
 {
  "kind": "analytics#gaData",
