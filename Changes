@@ -1,5 +1,9 @@
 Revision history for Perl module Net::Google::Analytics 
 
+3.04  2015-09-15
+        - Support samplingLevel request parameter
+          (Thanks to Sachin Sebastian for the pull request)
+
 3.03  2015-03-18
         - Add support for the Realtime Analytics API
           (Thanks to Andy (yacomink) for the initial patch)
