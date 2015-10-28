@@ -1,7 +1,7 @@
 #!perl -w
 use strict;
 
-use Test::More tests => 44;
+use Test::More tests => 47;
 
 our $expect_url;
 our $content;
@@ -181,6 +181,12 @@ is($rows->[3]->get('new_visits'), '2968');
 
 is($res->totals('bounces'), '101535');
 is($res->totals('new_visits'), '136540');
+
+# Test class cache
+
+my $class = ref($rows->[0]);
+$res = $analytics->retrieve($req);
+is(ref($res->rows->[0]), $class, 'class cache works');
 
 # Test projection
 

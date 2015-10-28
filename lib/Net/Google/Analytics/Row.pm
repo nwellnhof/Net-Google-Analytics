@@ -10,13 +10,19 @@ BEGIN {
 }
 
 my $class_count = 0;
+my %class_cache;
 
 # Dynamically generate a class with accessors
 sub _gen_class {
     my (undef, $column_headers) = @_;
 
+    # Cache lookup
+    my $cache_key = join("\t", map { $_->{name} } @$column_headers);
+    my $class = $class_cache{$cache_key};
+    return $class if $class;
+
     # Generate unique package name
-    my $class = "Net::Google::Analytics::Row_$class_count";
+    $class = "Net::Google::Analytics::Row_$class_count";
     ++$class_count;
 
     {
@@ -36,6 +42,9 @@ sub _gen_class {
         class   => $class,
         getters => \%getters,
     );
+
+    # Store in cache
+    $class_cache{$cache_key} = $class;
 
     return $class;
 }

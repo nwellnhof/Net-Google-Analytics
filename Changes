@@ -1,6 +1,8 @@
 Revision history for Perl module Net::Google::Analytics 
 
 ???
+        - Cache row classes generated at runtime. This also fixes a
+          memory leak.
         - Fix conversion from camel case. Handle names starting with
           uppercase letters and names with consecutive uppercase
           letters.
