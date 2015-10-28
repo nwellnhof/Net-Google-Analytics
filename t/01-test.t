@@ -87,7 +87,7 @@ $content = <<'EOF';
  "containsSampledData": false,
  "columnHeaders": [
   {
-   "name": "ga:medium",
+   "name": "ga:MEDium",
    "columnType": "DIMENSION",
    "dataType": "STRING"
   },
@@ -102,7 +102,7 @@ $content = <<'EOF';
    "dataType": "INTEGER"
   },
   {
-   "name": "ga:newVisits",
+   "name": "ga:newVISits",
    "columnType": "METRIC",
    "dataType": "INTEGER"
   }

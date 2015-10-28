@@ -1,5 +1,11 @@
 Revision history for Perl module Net::Google::Analytics 
 
+???
+        - Fix conversion from camel case. Handle names starting with
+          uppercase letters and names with consecutive uppercase
+          letters.
+          (Thanks to Sachin Sebastian for the report)
+
 3.04  2015-09-15
         - Support samplingLevel request parameter
           (Thanks to Sachin Sebastian for the pull request)

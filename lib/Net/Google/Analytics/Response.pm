@@ -67,7 +67,10 @@ sub _parse_column_name {
         or die("invalid column name: $name");
 
     # convert camel case
-    $res =~ s/[A-Z]/'_' . lc($&)/ge;
+    $res =~ s{([^A-Z]?)([A-Z]+)}{
+        my ($prev, $upper) = ($1, $2);
+        $prev . ($prev =~ /[a-z]/ ? '_' : '') . lc($upper);
+    }ge;
 
     return $res;
 }
