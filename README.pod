@@ -10,6 +10,9 @@
 This module provides a simple, straight-forward interface to the Google
 Analytics Core Reporting API, Version 3.
 
+Please refer to [this module's documentation](https://metacpan.org/pod/Net::Google::Analytics)
+for usage information.
+
 =head2 Installation from a CPAN tarball
 
     perl Makefile.PL

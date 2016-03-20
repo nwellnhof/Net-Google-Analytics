@@ -182,7 +182,7 @@ Analytics Core Reporting API, Version 3.
 See L<http://code.google.com/apis/analytics/docs/gdata/home.html>
 for the complete API documentation.
 
-WARNING: This module is not API compatible with the 0.x releases which target
+B<WARNING:> This module is not API compatible with the 0.x releases which target
 the legacy v2 API.
 
 =head1 SYNOPSIS
@@ -193,6 +193,7 @@ the legacy v2 API.
     # Insert your numeric Analytics profile ID here. You can find it under
     # profile settings. DO NOT use your account or property ID (UA-nnnnnn).
     my $profile_id    = "1234567";
+
     # See GETTING STARTED for how to get a client id, client secret, and
     # refresh token
     my $client_id     = "123456789012.apps.googleusercontent.com";
@@ -245,14 +246,42 @@ the legacy v2 API.
 
 =head1 GETTING STARTED
 
-L<Net::Google::Analytics::OAuth2> provides for easy authentication and
-authorization using OAuth 2.0. First, you have to register your application
-through the L<Google APIs Console|https://code.google.com/apis/console/>.
+This module uses Google Analytics' API from a single Google User Account.
+This means you will need a Google account user that has (at least) read
+access to the Google Analytics profile you want to query. What we'll do
+is, through L<OAuth2|Net::Google::Analytics::OAuth2>, have that user
+grant Analytics access to your Perl app.
 
-You will receive a client id and a client secret for your application in the
-APIs Console. For command line testing, you should use "Installed application"
-as application type. Then you can obtain a refresh token for your application
-by running the following script with your client id and secret:
+First, you have to register your project through the
+L<Google APIs Console|https://code.google.com/apis/console/>.
+
+Next, on your project's API Manager page, go over to "credentials" and click
+on the "I<Create credentials>" button. When the drop down menu appears,
+click on "I<Help me choose>".
+
+=for html
+<p>
+<img src="https://raw.githubusercontent.com/nwellnhof/Net-Google-Analytics/master/doc_images/credentials-howto-1.png" alt="screenshot of Google's API Manager menu" />
+</p>
+
+Select "Analytics API" under "I<Which API are you using?>", and select
+"Other UI (CLI)" under "I<Where will you be calling the API from?>". Finally,
+when they ask you "I<What data will you be accessing?>", choose "User data".
+
+=for html
+<p>
+<img src="https://raw.githubusercontent.com/nwellnhof/Net-Google-Analytics/master/doc_images/credentials-howto-2.png" alt="screenshot of Google's API options" />
+</p>
+
+At the end of this process, you will receive a client id and a client
+secret for your application in the API Manager Console.
+
+The final step is to get a refresh token. This is required because OAuth
+access is granted only for a limited time, and the refresh token allows your
+app to renew that access whenever it needs.
+
+You can obtain a refresh token for your application by running the following
+script with your client id and secret:
 
     use Net::Google::Analytics::OAuth2;
 
