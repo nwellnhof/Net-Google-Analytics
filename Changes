@@ -1,6 +1,9 @@
 Revision history for Perl module Net::Google::Analytics 
 
-???
+3.05  2016-03-21
+        - Improve and update documentation.
+        - Improve the "Getting Started" section.
+          (Thanks to Breno G. de Oliveira for the pull request)
         - Cache row classes generated at runtime. This also fixes a
           memory leak.
         - Fix conversion from camel case. Handle names starting with
