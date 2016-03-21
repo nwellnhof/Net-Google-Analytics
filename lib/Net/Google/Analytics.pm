@@ -253,7 +253,7 @@ is, through L<OAuth2|Net::Google::Analytics::OAuth2>, have that user
 grant Analytics access to your Perl app.
 
 First, you have to register your project through the
-L<Google APIs Console|https://code.google.com/apis/console/>.
+L<Google Developers Console|https://console.developers.google.com/>.
 
 Next, on your project's API Manager page, go over to "credentials" and click
 on the "I<Create credentials>" button. When the drop down menu appears,
@@ -298,10 +298,10 @@ be shown the code that you should enter in the Perl script. Then the script
 retrieves and prints a refresh token which can be used for non-interactive
 access.
 
-You also have to provide the profile ID of your Analytics profile with every
-request. You can find this decimal number hidden in the "profile settings"
-dialog in Google Analytics. Note that this ID is different from your account or
-property ID of the form UA-nnnnnn-n. Prepend your profile ID with "ga:" and
+You also have to provide the view ID (formerly profile ID) of your Analytics
+view with every request. You can find this decimal number under "Admin >
+View Settings" in Google Analytics. Note that this ID is different from your
+tracking ID of the form UA-nnnnnn-n. Prepend your view ID with "ga:" and
 pass it as "ids" parameter to the request object.
 
 The "ids", "metrics", "start_date", and "end_date" parameters are required for
