@@ -29,6 +29,12 @@ I<dzil>:
     dzil test
     dzil build
 
+=head2 SSL support
+
+This distribution requires LWP with SSL support. For LWP version 6.00 or
+newer, you should install LWP::Protocol::https. For older versions,
+Crypt::SSLeay or IO::Socket::SSL is required.
+
 =head2 Copyright
 
 This software is copyright (C) by Nick Wellnhofer.

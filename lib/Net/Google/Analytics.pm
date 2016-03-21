@@ -190,9 +190,9 @@ the legacy v2 API.
     use Net::Google::Analytics;
     use Net::Google::Analytics::OAuth2;
 
-    # Insert your numeric Analytics profile ID here. You can find it under
-    # profile settings. DO NOT use your account or property ID (UA-nnnnnn).
-    my $profile_id    = "1234567";
+    # Insert your numeric Analytics view ID here. You can find it under
+    # view settings. DO NOT use your account or property ID (UA-nnnnnn).
+    my $view_id       = "1234567";
 
     # See GETTING STARTED for how to get a client id, client secret, and
     # refresh token
@@ -212,7 +212,7 @@ the legacy v2 API.
 
     # Build request
     my $req = $analytics->new_request(
-        ids         => "ga:$profile_id",
+        ids         => "ga:$view_id",
         dimensions  => "ga:medium,ga:source",
         metrics     => "ga:bounces,ga:visits",
         filters     => "ga:medium==referral",
