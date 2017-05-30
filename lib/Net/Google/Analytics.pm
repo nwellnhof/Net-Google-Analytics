@@ -13,6 +13,7 @@ use Net::Google::Analytics::Row;
 use URI;
 
 sub new {
+
     my $package = shift;
 
     my $self = bless({}, $package);
@@ -63,9 +64,12 @@ sub new_request {
 }
 
 sub _uri {
-    my ($self, $req, $start_index, $max_results) = @_;
+    my ($self, $req, $start_index, $max_results, $service) = @_;
 
-    my $service = $req->realtime ? 'realtime' : 'ga';
+	$service = 'ga';
+	$service = 'realtime' if $req->service && $req->service eq 'realtime';
+	$service = 'mcf' if $req->service && $req->service eq 'mcf';
+
     my $uri = URI->new(
         "https://www.googleapis.com/analytics/v3/data/$service"
     );
@@ -376,4 +380,3 @@ Sets the L<LWP::UserAgent> object to use for HTTP(S) requests. You only
 have to call this method if you want to provide your own user agent.
 
 =cut
-
