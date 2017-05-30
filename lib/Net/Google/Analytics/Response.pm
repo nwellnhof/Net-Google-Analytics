@@ -66,6 +66,9 @@ sub _parse_column_name {
     my ($res) = $name =~ /^(?:ga|rt):(\w{1,64})\z/
         or die("invalid column name: $name");
 
+    # lc first letter so we don't add _ in front when we convert to camel case
+    $res = lc($1) . $2 if $res =~ /^([A-Z])(.*)/;
+    
     # convert camel case
     $res =~ s{([^A-Z]?)([A-Z]+)}{
         my ($prev, $upper) = ($1, $2);
