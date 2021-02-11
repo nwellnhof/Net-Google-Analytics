@@ -7,6 +7,7 @@ use warnings;
 
 use Class::XSAccessor
     accessors => [ qw(
+		service
         realtime
         ids
         start_date end_date
@@ -43,7 +44,9 @@ sub _params {
 
     my @required = qw(ids metrics);
 
-    if (!$self->{realtime}) {
+	if ($self->{realtime}) {
+		$self->{service} = 'realtime';
+	} else {
         push(@required, qw(start_date end_date));
     }
 
@@ -109,9 +112,12 @@ L<API reference|http://code.google.com/apis/analytics/docs/gdata/v3/reference.ht
 for a description of the request parameters. The provided parameter values must
 not be URL encoded.
 
-=head2 realtime
+=head2 service
 
-Set this parameter to use the Real Time Reporting API.
+Set this parameter to specify Core, Real Time or Multi-Channel Funnels Reporting API. Defaults to Core.
+
+	my $req = $analytics->new_request( service => 'realtime', ...);
+	my $req = $analytics->new_request( service => 'mcf', ...);
 
 =head2 ids
 
@@ -152,4 +158,3 @@ Required
 =head2 quota_user
 
 =cut
-

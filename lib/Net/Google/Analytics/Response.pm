@@ -63,7 +63,7 @@ sub _parse_json {
 sub _parse_column_name {
     my $name = shift;
 
-    my ($res) = $name =~ /^(?:ga|rt):(\w{1,64})\z/
+    my ($res) = $name =~ /^(?:ga|mcf|rt):(\w{1,64})\z/
         or die("invalid column name: $name");
 
     # convert camel case
@@ -313,4 +313,3 @@ categories.
     });
 
 =cut
-
