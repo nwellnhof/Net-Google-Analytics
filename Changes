@@ -1,5 +1,12 @@
 Revision history for Perl module Net::Google::Analytics 
 
+4.00  2023-06-21
+        - Completely refactored to comply with Google Analytics 4.
+          (unfortunately that means an entirely new and backwards
+           incompatible API).
+        - Improved speed and reduced footprint by replacing LWP
+          with HTTP::Tiny (core since perl 5.14)
+
 3.05  2016-03-21
         - Improve and update documentation.
         - Improve the "Getting Started" section.

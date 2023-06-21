@@ -12,31 +12,25 @@ BEGIN {
 my $class_count = 0;
 my %class_cache;
 
-# Dynamically generate a class with accessors
-sub _gen_class {
-    my (undef, $column_headers) = @_;
+sub gen_class {
+    my (undef, %params) = @_;
+    my @class_fields = (@{$params{dimensions}}, @{$params{metrics}});
 
     # Cache lookup
-    my $cache_key = join("\t", map { $_->{name} } @$column_headers);
-    my $class = $class_cache{$cache_key};
-    return $class if $class;
+    my $cache_key = join('.', @class_fields);
+    return $class_cache{$cache_key} if $class_cache{$cache_key};
 
     # Generate unique package name
-    $class = "Net::Google::Analytics::Row_$class_count";
-    ++$class_count;
+    my $class = 'Net::Google::Analytics::Row_' . $class_count++;
 
-    {
-        # Set globals of new class
-        no strict 'refs';
-        @{ "${class}::ISA" }            = qw(Net::Google::Analytics::Row);
-        ${ "${class}::column_headers" } = $column_headers;
+    { no strict 'refs';
+      @{ "${class}::ISA" } = 'Net::Google::Analytics::Row';
     }
 
-    # Create accessors
+    # Create getters
     my %getters;
-    for (my $i = 0; $i < @$column_headers; ++$i) {
-        my $getter = 'get_' . $column_headers->[$i]->{name};
-        $getters{$getter} = $i;
+    foreach my $i (0 .. $#class_fields) {
+        $getters{ 'get_' . $class_fields[$i] } = $i;
     }
     Class::XSAccessor::Array->import(
         class   => $class,
@@ -45,31 +39,20 @@ sub _gen_class {
 
     # Store in cache
     $class_cache{$cache_key} = $class;
-
     return $class;
 }
 
 sub new {
-    my ($class, $row) = @_;
-    return bless($row, $class);
-}
-
-sub _column_headers {
-    my $self = shift;
-    my $class = ref($self);
-    no strict 'refs';
-    return ${ "${class}::column_headers" };
+    my ($class, $row_data) = @_;
+    return bless [
+      map $_->{value}, @{$row_data->{dimensionValues}}, @{$row_data->{metricValues}}
+    ], $class;
 }
 
 sub get {
     my ($self, $name) = @_;
-
-    my $column_headers = $self->_column_headers;
-
-    for (my $i = 0; $i < @$column_headers; ++$i) {
-        return $self->[$i] if $column_headers->[$i]->{name} eq $name;
-    }
-
+    my $getter = 'get_' . $name;
+    return $self->$getter if $self->can($getter);
     return undef;
 }
 
@@ -83,7 +66,21 @@ Result row class for L<Net::Google::Analytics> web service.
 
 =head1 CONSTRUCTOR
 
+Row class constructors are used internally by L<Net::Google::Analytics>
+to dynamically create row objects with custom methods for the requested
+dimensions and metrics.
+
+=head2 gen_class
+
+Receives a hash with dimension and metric names as array references. Generates
+a row class containing the appropriate accessors (getters), and returns that
+class name (so you can call C<< $classname->new >>).
+
 =head2 new
+
+Receives a row data structure as returned by L<Net::Google::Analytics>' API,
+and populates the accessors (getters) accordingly, returning a new object.
+This construction should only be called by classes generated via L</gen_class>.
 
 =head1 GENERATED ACCESSORS
 
@@ -91,8 +88,8 @@ Result row class for L<Net::Google::Analytics> web service.
     my $page_path = $row->get_page_path;
 
 For every dimension and metric, an accessor of the form "get_..." is created.
-The 'ga:' prefix is stripped from the dimension and metric names and camel
-case is converted to lower case with underscores.
+Camel case is converted to lower case with underscores
+(e.g. you access 'screenPageViews' via the 'get_screen_page_views' method).
 
 =head1 METHODS
 
@@ -101,8 +98,6 @@ case is converted to lower case with underscores.
     my $value = $row->get($dimension_name);
     my $value = $row->get($metric_name);
 
-Returns the value of the dimension or metric with the given name. Use names
-without the 'ga:' prefix and converted to lower case with underscores.
-
-=cut
-
+Returns the value of the dimension or metric with the given name. Make sure to
+use names converted to lower case with underscores
+(e.g. 'page_path', not 'pagePath').

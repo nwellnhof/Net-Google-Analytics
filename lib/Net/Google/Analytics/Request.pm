@@ -3,153 +3,171 @@ package Net::Google::Analytics::Request;
 use strict;
 use warnings;
 
+use JSON ();
+
 # ABSTRACT: Google Analytics API request
 
 use Class::XSAccessor
     accessors => [ qw(
-        realtime
-        ids
-        start_date end_date
-        metrics dimensions
-        sort
-        filters
-        segment
-        start_index max_results
-        fields
-        sampling_level
-        pretty_print
-        user_ip quota_user
+        property_id
+        dimensions
+        metrics
+        date_ranges
+        dimension_filter
+        metric_filter
+        offset
+        limit
+        metric_aggregations
+        order_bys
+        currency_code
+        cohort_spec
+        keep_empty_rows
+        return_property_quota
     ) ],
     constructor => 'new';
 
-my @param_map = (
-    ids            => 'ids',
-    start_date     => 'start-date',
-    end_date       => 'end-date',
-    metrics        => 'metrics',
-    dimensions     => 'dimensions',
-    sort           => 'sort',
-    filters        => 'filters',
-    segment        => 'segment',
-    fields         => 'fields',
-    sampling_level => 'samplingLevel',
-    pretty_print   => 'prettyPrint',
-    user_ip        => 'userIp',
-    quota_user     => 'quotaUser',
+my %param_map = (
+    dimensions            => 'dimensions',
+    metrics               => 'metrics',
+    date_ranges           => 'dateRanges',
+    dimension_filter      => 'dimensionFilter',
+    metric_filter         => 'metricFilter',
+    offset                => 'offset',
+    limit                 => 'limit',
+    metric_aggregations   => 'metricAggregations',
+    order_bys             => 'orderBys',
+    currency_code         => 'currencyCode',
+    cohort_spec           => 'cohortSpec',
+    keep_empty_rows       => 'keepEmptyRows',
+    return_property_quota => 'returnPropertyQuota',
 );
 
-sub _params {
-    my $self = shift;
-
-    my @required = qw(ids metrics);
-
-    if (!$self->{realtime}) {
-        push(@required, qw(start_date end_date));
+sub as_json {
+    my ($self) = @_;
+    my %obj;
+    foreach my $k (keys %param_map) {
+        if (my $v = $self->$k) {
+            $obj{ $param_map{$k} } = $v;
+        }
     }
-
-    for my $name (@required) {
-        my $value = $self->{$name};
-        die("parameter $name is empty")
-            if !defined($value) || $value eq '';
-    }
-
-    my @params;
-
-    for (my $i=0; $i<@param_map; $i+=2) {
-        my $from = $param_map[$i];
-        my $to   = $param_map[$i+1];
-
-        my $value = $self->{$from};
-        push(@params, $to => $value) if defined($value);
-    }
-
-    return @params;
+    return JSON::encode_json(\%obj);
 }
 
 1;
-
 __END__
-
-=head1 DESCRIPTION
-
-Request class for L<Net::Google::Analytics> web service.
 
 =head1 SYNOPSIS
 
-    my $req = $analytics->new_request(
-        ids         => "ga:$profile_id",
-        dimensions  => "ga:medium,ga:source",
-        metrics     => "ga:bounces,ga:visits",
-        filters     => "ga:medium==referral",
-        sort        => "-ga:visits",
-        start_date  => "2011-10-01",
-        end_date    => "2011-10-31",
-        max_results => 5,
+    # for booleans, use \0 or JSON::false and \1 or JSON::true.
+    my $request = $ga4->new_request(
+        property_id => '123456789',
+        dimensions => [ {name => 'searchTerm'} ],
+        dimension_filter => {
+            filter => {
+                fieldName => 'searchTerm',
+                stringFilter => {
+                    matchType => 'CONTAINS',
+                    value => 'my query',
+                    caseSensitive => JSON::true,
+                }
+            }
+        },
+        metrics    => [ {name => 'viewsPerSession', expression => 'screenPageViews/sessions'} ],
+        metric_filter => {
+            filter => {
+                fieldName => 'viewsPerSession',
+                numericFilter => {
+                    operation => 'GREATER_THAN',
+                    value => 100,
+                },
+            },
+        },
+        date_ranges => [ {startDate => '2023-01-01', endDate => '2023-05-31'} ],
+        offset => 0,
+        limit => 50,
+        metric_aggregations => ['TOTAL', 'COUNT'],
+        order_bys => [ {desc => \1, metric => { metricName => 'viewsPerSession' }} ],
+        currency_code => 'USD',
+        keep_empty_rows => \0,
+        return_property_quota => \1,
     );
 
-    my $res = $analytics->retrieve($req);
+    my $res = $analytics->run_report($req);
+
+=head1 DESCRIPTION
+
+Request class for L<Net::Google::Analytics>.
 
 =head1 CONSTRUCTOR
 
 =head2 new
 
-    my $req = Net::Google::Analytics::Request->new(param => $value, ...);
-    my $req = $analytics->new_request(param => $value, ...);
+Creates a new request object with the given parameters. But you probably want
+to reach the constructor via L<< Net::Google::Analytics/new_request >>.
 
-Creates a new request object with the given parameters. You can also use the
-shorthand L<Net::Google::Analytics/new_request>.
+=head1 METHODS
+
+=head2 as_json
+
+Returns a JSON representation of the object. Used mostly internally as payload
+for the API, or if you are making the actual HTTPS request yourself.
 
 =head1 ACCESSORS
 
-    $req->ids('ga:...');
-    $req->dimensions('ga:...');
+=head2 property_id
 
-See the
-L<API reference|http://code.google.com/apis/analytics/docs/gdata/v3/reference.html#data_request>
-for a description of the request parameters. The provided parameter values must
-not be URL encoded.
+The Google Analytics 4 propertyId to use when querying. To find yours, visit L<https://analytics.google.com/> then go to C<< admin :: property :: property settings >>, then copy the property id.
 
-=head2 realtime
-
-Set this parameter to use the Real Time Reporting API.
-
-=head2 ids
-
-Required
-
-=head2 start_date
-
-Required for non-realtime requests
-
-=head2 end_date
-
-Required for non-realtime requests
-
-=head2 metrics
-
-Required
+B<NOTE>: The GA4 property id is I<completely numeric>. If you see a property id starting with 'UA-', you're viewing the old "universal analytics", which doesn't work anymore.
 
 =head2 dimensions
 
-=head2 sort
+An array reference of hash references containing valid L<< GA4 dimensions | https://developers.google.com/analytics/devguides/reporting/data/v1/rest/v1beta/Dimension >>.
 
-=head2 filters
+=head2 dimension_filter
 
-=head2 segment
+A hash reference containing a valid L<< G4 filter expression | https://developers.google.com/analytics/devguides/reporting/data/v1/rest/v1beta/FilterExpression >>. This can be used to filter your dimensions.
 
-=head2 sampling_level
+=head2 metrics
 
-=head2 start_index
+An array reference of hash references containing valid L<< GA4 metrics | https://developers.google.com/analytics/devguides/reporting/data/v1/rest/v1beta/Metric >>.
 
-=head2 max_results
+=head2 metric_filter
 
-=head2 fields
+A hash reference containing a valid L<< G4 filter expression | https://developers.google.com/analytics/devguides/reporting/data/v1/rest/v1beta/FilterExpression >>. This can be used to filter your metrics.
 
-=head2 pretty_print
+=head2 date_ranges
 
-=head2 user_ip
+An array reference of hash references containing valid L<< GA4 date ranges | https://developers.google.com/analytics/devguides/reporting/data/v1/rest/v1beta/DateRange >>.
 
-=head2 quota_user
+=head2 offset
 
-=cut
+The row count of the start row. The first row is counted as row 0.
 
+=head2 limit
+
+The number of rows to return. If unspecified, 10_000 rows are returned. The API returns a maximum of 250_000 rows per request, no matter how many you ask for.
+
+=head2 metric_aggregations
+
+An array reference of strings containing aggregation of metrics. Can be set to 'TOTAL' (sum), 'MINIMUM', 'MAXIMUM', or 'COUNT'. Aggregated metric values will be shown in rows where the dimensionValues are set to "RESERVED_(MetricAggregation)".
+
+=head2 order_bys
+
+An array reference of hash references containing valid L<< GA4 order by || https://developers.google.com/analytics/devguides/reporting/data/v1/rest/v1beta/OrderBy >> clauses. This lets you sort your results in many different ways.
+
+=head2 currency_code
+
+A string with a valid ISO4217 currency code. Uses the property's default currency when undef.
+
+=head2 cohort_spec
+
+A hash reference to a valid L<< GA4 cohort specification | https://developers.google.com/analytics/devguides/reporting/data/v1/rest/v1beta/CohortSpec >>.
+
+=head2 keep_empty_rows
+
+Boolean. Set to false to ignore rows where all metrics are 0.
+
+=head2 return_property_quota
+
+Boolean. When true, includes the current state of this Analytics Property's quota.

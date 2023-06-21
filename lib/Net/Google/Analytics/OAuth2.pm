@@ -5,8 +5,7 @@ use warnings;
 
 # ABSTRACT: OAuth2 for Google Analytics API
 
-use JSON;
-use LWP::UserAgent;
+use JSON ();
 use URI;
 
 sub new {
@@ -17,6 +16,14 @@ sub new {
     die("client_secret missing") if !$self->{client_secret};
 
     $self->{redirect_uri} ||= 'urn:ietf:wg:oauth:2.0:oob';
+
+    if (!$self->{user_agent}) {
+        require HTTP::Tiny;
+        $self->{user_agent} = HTTP::Tiny->new(
+            agent      => __PACKAGE__,
+            verify_SSL => 1,
+        );
+    }
 
     return bless($self, $class);
 }
@@ -40,8 +47,7 @@ sub authorize_url {
 sub get_access_token {
     my ($self, $code) = @_;
 
-    my $ua  = LWP::UserAgent->new;
-    my $res = $ua->post('https://accounts.google.com/o/oauth2/token', [
+    my $res = $self->{user_agent}->post_form('https://accounts.google.com/o/oauth2/token', [
         code          => $code,
         client_id     => $self->{client_id},
         client_secret => $self->{client_secret},
@@ -49,25 +55,24 @@ sub get_access_token {
         grant_type    => 'authorization_code',
     ]);
 
-    die('error getting token: ' . $res->status_line) unless $res->is_success;
+    die('error getting token: ' . $res->{status} . ' ' . $res->{reason}) unless $res->{success};
 
-    return from_json($res->decoded_content);
+    return JSON::decode_json($res->{content});
 }
 
 sub refresh_access_token {
     my ($self, $refresh_token) = @_;
 
-    my $ua = LWP::UserAgent->new;
-    my $res = $ua->post('https://accounts.google.com/o/oauth2/token', [
+    my $res = $self->{user_agent}->post_form('https://accounts.google.com/o/oauth2/token', [
         refresh_token => $refresh_token,
         client_id     => $self->{client_id},
         client_secret => $self->{client_secret},
         grant_type    => 'refresh_token',
     ]);
 
-    die('error getting token: ' . $res->status_line) unless $res->is_success;
+    die('error getting token: ' . $res->{status} . ' ' . $res->{reason}) unless $res->{success};
 
-    return from_json($res->decoded_content);
+    return JSON::decode_json($res->{content});
 }
 
 sub interactive {
@@ -96,7 +101,6 @@ EOF
 }
 
 1;
-
 __END__
 
 =head1 DESCRIPTION
@@ -182,6 +186,10 @@ following entries:
 
 Obtain and print an access and refresh token interactively using the console.
 The user is prompted to visit a Google URL and enter a code from that page.
+
+=head1 SEE ALSO
+
+L<< Analytics Reporting API - Authorization | https://developers.google.com/analytics/devguides/reporting/core/v4/authorization >>.
 
 =cut
 
